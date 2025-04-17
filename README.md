@@ -2,7 +2,7 @@
 
 🎯 **Sistema de Gerenciamento de Chamados para TI**
 
-O **TI.Manager** é um sistema acadêmico desenvolvido como Projeto Integrador do curso de Engenharia de Software. Seu objetivo é otimizar o controle de chamados técnicos entre empresas contratantes e equipes de TI terceirizadas.
+O **TI.Manager** é um sistema acadêmico desenvolvido como Projeto Integrador: Engenharia de Software. Seu objetivo é otimizar o controle de chamados técnicos entre empresas contratantes e equipes de TI terceirizadas.
 
 ## 🔧 Funcionalidades
 
