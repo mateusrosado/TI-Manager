@@ -15,12 +15,10 @@ O **TI.Manager** é um sistema acadêmico desenvolvido como Projeto Integrador d
 
 ## 🛠️ Tecnologias Utilizadas
 
-- Front-End: [Ex: React / Vue / Angular]
-- Back-End: [Ex: Node.js / Django / Spring Boot]
-- Banco de Dados: [Ex: PostgreSQL / MySQL / MongoDB]
-- Outros: Trello, GitHub, Figma, etc.
-
-> *As tecnologias podem variar conforme a evolução do projeto.*
+- **Front-End:** HTML e CSS  
+- **Back-End:** PHP  
+- **Banco de Dados:** MySQL  
+- **Outros:** Trello, Figma e GitHub
 
 ## 👥 Equipe
 
