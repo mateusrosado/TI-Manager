@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel de Empresas</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../Assets/css/tema.css">
+</head>
+
+<body class="home">
+  <aside>
+    <div class="menu-title">🔵 MENU</div>
+    <a onclick="showSection('home')">Home</a>
+    <a onclick="showSection('empresas')">Empresas</a>
+    <a onclick="showSection('funcionarios')">Funcionarios</a>
+    <a onclick="showSection('historico')">Historico</a>
+    <a onclick="showSection('configuracoes')">Configurações</a>
+    <a href="login/" style="margin-top: auto;">Logout</a>
+  </aside>  
+
+  <main class="main">
+    <section id="home" class="active">
+        <h2>Empresas e Chamados</h2>
+        <button class="btn">+ Add Empresa</button>
+        <div class="card-container">
+          <div class="card">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Dell_Logo.svg/512px-Dell_Logo.svg.png" alt="Dell" width="60">
+            <h3>Dell Brasil</h3>
+            <p><strong>08</strong> Funcionários</p>
+            <p><strong>04</strong> Chamados</p>
+            <button class="btn">Ver mais</button>
+          </div>
+          <div class="card">
+            <img src="https://www.intel.com.br/content/dam/logos/intel-header-logo.svg" alt="Intel" width="60">
+            <h3>Intel Brasil</h3>
+            <p><strong>06</strong> Funcionários</p>
+            <p><strong>02</strong> Chamados</p>
+            <button class="btn">Ver mais</button>
+          </div>
+        </div>
+    </section>
+
+    <section id="empresas">
+      <form style="margin-top: 50px;">
+        <h2>Cadastro de Empresa</h2>
+        <label>Nome</label>
+        <input type="text" placeholder="Nome da empresa">
+
+        <label>CNPJ</label>
+        <input type="text" placeholder="CNPJ da empresa">
+
+        <label>Contato</label>
+        <input type="text" placeholder="XXXX - XXXX">
+
+        <label>Endereço</label>
+        <input type="text" placeholder="Endereço da empresa">
+
+        <button class="btn" type="submit">Salvar</button>
+      </form>
+    </section>
+
+    <section id="funcionarios">
+      <form>
+        <h2>Cadastro de Funcionário</h2>
+        <label>Nome</label>
+        <input type="text" placeholder="Nome do Funcionário">
+
+        <label>CPF</label>
+        <input type="text" placeholder="CPF do Funcionário">
+
+        <label>Email</label>
+        <input type="email" placeholder="Digite um email">
+
+        <label>Função</label>
+        <input type="text" placeholder="Função do funcionário">
+
+        <label>Senha</label>
+        <input type="password" placeholder="Digite uma senha">
+
+        <button class="btn" type="submit">Salvar</button>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    function showSection(id) {
+      document.querySelectorAll('main section').forEach(sec => {
+        sec.classList.remove('active');
+      });
+      const selected = document.getElementById(id);
+      if (selected) selected.classList.add('active');
+    }
+  </script>
+</body>
+
+</html>
