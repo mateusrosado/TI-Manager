@@ -11,19 +11,29 @@
 
 <body class="home">
   <aside>
-    <div class="menu-title">🔵 MENU</div>
-    <a onclick="showSection('home')">Home</a>
-    <a onclick="showSection('empresas')">Empresas</a>
-    <a onclick="showSection('funcionarios')">Funcionarios</a>
-    <a onclick="showSection('historico')">Historico</a>
-    <a onclick="showSection('configuracoes')">Configurações</a>
+    <div class="menu-title">🔵MENU</div>
+    <div class="user">
+      <div class="user-logo">
+        𖡌
+      </div>
+      <div class="user-type">
+        Cliente
+      </div>
+    </div>
+    <a class="active" href="#" >Home</a>
+    <a href="../AddCliente/" >Empresas</a>
+    <a href="../AddFuncionario/" >Funcionarios</a>
+    <a href="../TableExample/" >Historico</a>
+    <a href="#" >Configurações</a>
     <a href="../Login/" style="margin-top: auto;">Logout</a>
   </aside>  
 
   <main class="main">
     <section id="home" class="active">
-        <h2>Empresas e Chamados</h2>
-        <button class="btn">+ Add Empresa</button>
+        <div class="header-section">
+          <h2>Empresas e Chamados</h2>
+          <button class="btn">+ Add Empresa</button>
+        </div>
         <div class="card-container">
           <div class="card">
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Dell_Logo.svg/512px-Dell_Logo.svg.png" alt="Dell" width="60">
@@ -41,58 +51,6 @@
           </div>
         </div>
     </section>
-
-    <section id="empresas">
-      <form style="margin-top: 50px;">
-        <h2>Cadastro de Empresa</h2>
-        <label>Nome</label>
-        <input type="text" placeholder="Nome da empresa">
-
-        <label>CNPJ</label>
-        <input type="text" placeholder="CNPJ da empresa">
-
-        <label>Contato</label>
-        <input type="text" placeholder="XXXX - XXXX">
-
-        <label>Endereço</label>
-        <input type="text" placeholder="Endereço da empresa">
-
-        <button class="btn" type="submit">Salvar</button>
-      </form>
-    </section>
-
-    <section id="funcionarios">
-      <form>
-        <h2>Cadastro de Funcionário</h2>
-        <label>Nome</label>
-        <input type="text" placeholder="Nome do Funcionário">
-
-        <label>CPF</label>
-        <input type="text" placeholder="CPF do Funcionário">
-
-        <label>Email</label>
-        <input type="email" placeholder="Digite um email">
-
-        <label>Função</label>
-        <input type="text" placeholder="Função do funcionário">
-
-        <label>Senha</label>
-        <input type="password" placeholder="Digite uma senha">
-
-        <button class="btn" type="submit">Salvar</button>
-      </form>
-    </section>
   </main>
-
-  <script>
-    function showSection(id) {
-      document.querySelectorAll('main section').forEach(sec => {
-        sec.classList.remove('active');
-      });
-      const selected = document.getElementById(id);
-      if (selected) selected.classList.add('active');
-    }
-  </script>
 </body>
-
 </html>
