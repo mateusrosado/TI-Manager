@@ -1,23 +1,23 @@
 <!DOCTYPE html>
-<html lang="pt-br">
-
+<html lang="pt-BR">
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<title>Login</title>
-
-	<!-- FAVICON -->
-
-	<!-- BOOTSTRAP -->
-	<link rel="stylesheet" href="<?= BASE_URL; ?>Assets/css/bootstrap.min.css">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="<?= BASE_URL; ?>Assets/css/tema.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
 </head>
+<body class="login-page">
+    <div class="container">
 
-<body>
-	
+        <div class="ball"></div>
+
+        <div class="form-container">
+            <h1>LOGIN</h1>
+            <form method="POST"> <input type="text" placeholder="Código de acesso" name="codigo_acesso"> <input type="password" placeholder="Senha" name="senha"> <a href="<?= BASE_URL; ?>SendEmail/">Esqueci minha senha</a>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+    </div>
 </body>
-
-<script src="<?= BASE_URL . 'Assets/js/jquery-3.5.1.js' ?>"></script>
-
 </html>

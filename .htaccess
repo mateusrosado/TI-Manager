@@ -1,7 +1,6 @@
 RewriteEngine On
+RewriteBase /TI-Manager/ 
 Options All -Indexes
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond ${REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ /TI.manager/index.php?url=$1 [QSA,L]
-#RewriteRule ^(.*)$ /index.php?url=$1 [QSA,L]
-
+RewriteRule ^(.*)$ index.php?url=$1 [QSA,L] 
