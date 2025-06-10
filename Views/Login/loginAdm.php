@@ -12,12 +12,12 @@
     <div class="ball"></div>
   
     <div class="form-container">
-      <h1>LOGIN</h1>
-      <form>
+      <h1>LOGIN ADM</h1>
+      <form method="post" action="<?= BASE_URL; ?>/Login/loginAdm">
         <input type="text" placeholder="Código de acesso">
         <input type="password" placeholder="Senha">
           <a href="../SendEmail/">Esqueci minha senha</a>
-        <button type="button" onclick="window.location.href='../Home/'">Login</button>
+        <button type="submit">Login</button>
       </form>
     </div>
   </div>
