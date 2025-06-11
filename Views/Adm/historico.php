@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Painel de Empresas</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../Assets/css/tema.css">
+  <link rel="stylesheet" href="<?= BASE_URL; ?>assets/css/tema.css">
 </head>
 
 <body class="home">
@@ -20,11 +20,11 @@
         Cliente
       </div>
     </div>
-    <a href="../Home/" >Home</a>
-    <a href="../Empresa/" >Empresas</a>
-    <a href="../Funcionario/" >Funcionarios</a>
-    <a class="active" href="#" >Historico</a>
-    <a href="../Login/" style="margin-top: auto;">Logout</a>
+    <a href="<?= BASE_URL; ?>Adm/home">Home</a>
+    <a href="<?= BASE_URL; ?>Adm/empresas">Empresas</a>
+    <a href="<?= BASE_URL; ?>Adm/funcionarios">Funcionarios</a>
+    <a class="active" href="<?= BASE_URL; ?>Adm/historico">Historico</a>
+    <a href="<?= BASE_URL; ?>Adm/logout/" style="margin-top: auto;">Logout</a>
   </aside>  
 
   <main class="main">

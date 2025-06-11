@@ -15,10 +15,11 @@
             <div class="user-logo">𖡌</div>
             <div class="user-type">Cliente</div>
         </div>
-        <a href="<?= BASE_URL; ?>Home/">Home</a>
-        <a class="active" href="<?= BASE_URL; ?>Empresa/">Empresas</a> <a href="<?= BASE_URL; ?>Funcionario/">Funcionarios</a>
-        <a href="<?= BASE_URL; ?>TableExample/">Historico</a>
-        <a href="<?= BASE_URL; ?>Login/" style="margin-top: auto;">Logout</a>
+        <a href="<?= BASE_URL; ?>Adm/home">Home</a>
+        <a class="active" href="<?= BASE_URL; ?>Adm/empresas">Empresas</a>
+        <a href="<?= BASE_URL; ?>Adm/funcionarios">Funcionarios</a>
+        <a href="<?= BASE_URL; ?>Adm/historico">Historico</a>
+        <a href="<?= BASE_URL; ?>Adm/logout/" style="margin-top: auto;">Logout</a>
     </aside>
 
     <main class="main">
