@@ -14,7 +14,7 @@
         <div class="menu-title">🔵MENU</div>
         <div class="user">
             <div class="user-logo">𖡌</div>
-            <div class="user-type">Cliente</div>
+            <?= htmlspecialchars($viewData['name'] ?? 'Usuário'); ?> (<?= htmlspecialchars($viewData['user_role'] ?? 'Admin'); ?>)
         </div>
         <a href="<?= BASE_URL; ?>Adm/home">Home</a>
         <a href="<?= BASE_URL; ?>Adm/empresas">Empresas</a>

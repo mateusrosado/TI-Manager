@@ -17,7 +17,7 @@
         𖡌
       </div>
       <div class="user-type">
-        Cliente
+        <?= htmlspecialchars($viewData['name'] ?? 'Usuário'); ?> (<?= htmlspecialchars($viewData['user_role'] ?? 'Admin'); ?>)
       </div>
     </div>
     <a href="<?= BASE_URL; ?>Adm/home">Home</a>

@@ -1,4 +1,5 @@
 <?php
+// File: TI-MANAGER/Controllers/AdmController.php
 
 class AdmController extends Controller
 {
@@ -36,7 +37,7 @@ class AdmController extends Controller
 
         $cnpjNumerico = preg_replace('/[^0-9]/', '', $cnpj);
         if (strlen($cnpjNumerico) !== 14 || !is_numeric($cnpjNumerico)) {
-            $this->session->set('login_error', 'Formato de CNPJ inválido. Use apenas números ou o formato 00.000.000/0000-00.');
+            $this->session->set('login_error', 'Formato de CNPJ inválido.');
             header('Location: ' . BASE_URL . 'index.php?url=login/adm');
             exit();
         }
@@ -99,7 +100,7 @@ class AdmController extends Controller
 
         $userName = $this->session->get('user_name');
         $userRole = $this->session->get('user_role');
-        $funcionariosData = $this->userModel->getFuncionariosWithCompanyInfo();
+        $funcionariosData = $this->userModel->getFuncionariosFiltered('funcionario_ti');
 
         $viewData = [
             'name' => $userName,
