@@ -101,25 +101,35 @@ class Core {
                 $controller->home();
                 break;
 
-            // ROTA ADICIONADA: Listagem de Funcionários para o ADM
+            // ROTA: Listagem de Funcionários para o ADM
             case 'Adm/funcionarios':
                 $controller = new AdmController();
                 $controller->funcionarios();
                 break;
 
-            // ROTA ADICIONADA: Listagem de Empresas para o ADM
-            case 'Adm/empresas': // NOVO
+            // ROTA: Listagem de Empresas para o ADM
+            case 'Adm/empresas':
                 $controller = new AdmController();
-                $controller->empresas(); // Chama o método empresas()
+                $controller->empresas();
                 break;
 
-            // ROTA ADICIONADA: Histórico de Chamados para o ADM
-            case 'Adm/historico': // NOVO
+            // ROTA: Histórico de Chamados para o ADM
+            case 'Adm/historico':
                 $controller = new AdmController();
-                $controller->historico(); // Chama o método historico()
+                $controller->historico();
                 break;
 
-            // Rota para a página de Chamados dos Funcionários (chamará FuncionarioController::chamados())
+            // ROTA: Processar Cadastro de Funcionário TI (o GET para 'Adm/addFuncionario' foi removido)
+            case 'Adm/createFuncionarioTI':
+                if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                    $controller = new AdmController();
+                    $controller->createFuncionarioTI();
+                } else {
+                    http_response_code(405); echo "Método não permitido para esta rota.";
+                }
+                break;
+
+            // Rota para a página de Chamados dos Funcionários
             case 'Chamados/index':
                 $controller = new FuncionarioController();
                 $controller->chamados();
@@ -133,9 +143,8 @@ class Core {
 
             default:
                 // Fallback para roteamento dinâmico (Controller/Action/Params)
-                // Usar $currentController e $currentAction que foram parseados do URL
                 if (method_exists($currentController, $currentAction)) {
-                    $controller = new $currentController(); // Re-instancia para garantir o tipo correto
+                    $controller = new $currentController();
                     call_user_func_array(array($controller, $currentAction), $params);
                 } else {
                     $controller = new NotFoundController();
