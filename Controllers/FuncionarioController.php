@@ -3,6 +3,6 @@
 class FuncionarioController extends Controller {
 
     public function chamados() {
-        $this->loadView('Funcionario/chamados');
+        $this->loadView('Funcionario/chamados-menu');
     }
 }
