@@ -24,7 +24,7 @@
         <a href="<?= BASE_URL; ?>Empresa/">Empresas</a>
         <a href="<?= BASE_URL; ?>Funcionario/">Funcionarios</a>
         <a href="<?= BASE_URL; ?>TableExample/">Historico</a>
-        <a href="<?= BASE_URL; ?>Login/" style="margin-top: auto;">Logout</a>
+        <a href="<?= BASE_URL; ?>Adm/logout/" style="margin-top: auto;">Logout</a>
     </aside>
 
     <main class="main">
