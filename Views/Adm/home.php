@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel de Empresas</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= BASE_URL; ?>Assets/css/tema.css">
+    <link rel="stylesheet" href="<?= BASE_URL; ?>assets/css/tema.css">
 </head>
 
 <body class="home">

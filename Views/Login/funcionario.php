@@ -12,8 +12,8 @@
     <div class="ball"></div>
   
     <div class="form-container">
-      <h1>LOGIN ADM</h1>
-      <form method="post" action="<?= BASE_URL; ?>/Login/loginAdm">
+      <h1>LOGIN FUNCIONÁRIO</h1>
+      <form method="post" action="<?= BASE_URL; ?>Funcionario/chamados">
         <input type="text" placeholder="Código de acesso">
         <input type="password" placeholder="Senha">
           <a href="../SendEmail/">Esqueci minha senha</a>

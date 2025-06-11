@@ -3,14 +3,9 @@
 
 class LoginController extends Controller {
     public function adm() {
-        $this->loadView('Login/loginAdm');
+        $this->loadView('Login/Adm');
     }
     public function funcionario() {
-        $this->loadView('Login/loginFuncionario');
+        $this->loadView('Login/funcionario');
     }
-    
-    public function loginAdm() {
-        $this->loadView('Adm/home');
-    }
-
 }
