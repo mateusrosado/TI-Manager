@@ -1,40 +1,68 @@
-CREATE DATABASE ti_manager_db;
+CREATE DATABASE IF NOT EXISTS ti_manager_db;
 USE ti_manager_db;
 
+-- Tabela de Usuários: Armazena todos os usuários do sistema com seus papéis específicos.
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL, -- Email é UNIQUE para todos os usuários
     password VARCHAR(255) NOT NULL,
-    role ENUM('admin', 'client', 'employee') NOT NULL,
+    -- Papéis específicos para cada tipo de usuário:
+    -- 'admin': Adm (dono da empresa de TI)
+    -- 'adm_cliente': AdmCliente (administrador da empresa contratante)
+    -- 'funcionario_ti': FuncionarioTI (funcionário de TI alocado)
+    -- 'funcionario_cliente': FuncionarioCliente (usuário final na empresa contratante)
+    role ENUM('admin', 'adm_cliente', 'funcionario_ti', 'funcionario_cliente') NOT NULL,
+    -- CNPJ para login de 'admin' e 'adm_cliente'. Pode ser NULL para outros papéis.
+    cnpj_login VARCHAR(18) UNIQUE NULL,
+    -- CPF para dados de 'funcionario_ti' e 'funcionario_cliente'. Pode ser NULL para outros papéis.
+    cpf VARCHAR(14) UNIQUE NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Tabela de Clientes: Armazena as informações das empresas contratantes.
 CREATE TABLE clients (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    -- user_id aqui se refere ao AdmCliente que gerencia esta empresa.
+    -- O Adm principal também pode criar clientes, mas o gerenciamento de acesso será do AdmCliente.
     user_id INT NOT NULL,
     company_name VARCHAR(100) NOT NULL,
-    cnpj VARCHAR(18) NOT NULL,
+    cnpj VARCHAR(18) UNIQUE NOT NULL, -- CNPJ da empresa cliente deve ser UNIQUE
+    contact VARCHAR(100), -- Campo para contato da empresa
     address TEXT,
-    responsible_name VARCHAR(100),
+    data_abertura TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Data de registro/abertura da empresa
+    data_encerramento TIMESTAMP NULL, -- Data de encerramento da empresa (usado para desativação lógica)
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- Tabela de Funcionários de TI: Informações adicionais para usuários com role 'funcionario_ti'.
 CREATE TABLE employees (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    access_level ENUM('junior', 'pleno', 'senior', 'admin') DEFAULT 'junior',
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    user_id INT NOT NULL, -- FK para o usuário em 'users' com role 'funcionario_ti'
+    -- client_id para associar o FuncionarioTI a uma empresa cliente específica.
+    -- Um FuncionarioTI pode não estar alocado a um cliente ainda (NULL),
+    -- ou estar alocado a apenas um cliente por vez.
+    client_id INT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE SET NULL -- Se o cliente for deletado, o funcionário de TI fica sem alocação.
 );
 
+-- Tabela de Chamados: Registra todos os chamados.
 CREATE TABLE tickets (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    client_id INT NOT NULL,
-    created_by INT NOT NULL,
-    assigned_to INT DEFAULT NULL,
-    service_type VARCHAR(100) NOT NULL,
-    location TEXT NOT NULL,
-    status ENUM('Aberto', 'Em andamento', 'Encerrado') DEFAULT 'Aberto',
+    client_id INT NOT NULL, -- Empresa cliente à qual o chamado pertence
+    created_by INT NOT NULL, -- ID do usuário (FuncionarioCliente) que criou o chamado
+    assigned_to INT DEFAULT NULL, -- ID do funcionário de TI (FuncionarioTI) atribuído
+    service_type VARCHAR(100) NOT NULL, -- Tipo de serviço (ex: Manutenção, Suporte, Instalação)
+    description TEXT, -- Descrição detalhada do problema
+    location TEXT NOT NULL, -- Local onde o serviço será realizado
+    -- Status do chamado:
+    -- 'Aberto': Recém-criado, aguardando atribuição/aceitação.
+    -- 'Pendente': Atribuído, mas aguardando início do trabalho pelo FuncionarioTI.
+    -- 'Em andamento': FuncionarioTI está trabalhando no chamado.
+    -- 'Recusado': FuncionarioTI recusou o chamado.
+    -- 'Encerrado': Chamado finalizado.
+    status ENUM('Aberto', 'Pendente', 'Em andamento', 'Recusado', 'Encerrado') DEFAULT 'Aberto',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (client_id) REFERENCES clients(id),
@@ -42,30 +70,34 @@ CREATE TABLE tickets (
     FOREIGN KEY (assigned_to) REFERENCES employees(id)
 );
 
+-- Tabela de Atualizações de Chamados: Histórico de todas as mudanças de status e notas.
 CREATE TABLE ticket_updates (
     id INT AUTO_INCREMENT PRIMARY KEY,
     ticket_id INT NOT NULL,
-    updated_by INT NOT NULL,
-    status ENUM('Aberto', 'Em andamento', 'Encerrado') NOT NULL,
-    update_note TEXT,
+    updated_by INT NOT NULL, -- ID do usuário (FuncionarioTI ou FuncionarioCliente) que atualizou
+    -- Status deve refletir os possíveis status da tabela tickets
+    status ENUM('Aberto', 'Pendente', 'Em andamento', 'Recusado', 'Encerrado') NOT NULL,
+    update_note TEXT, -- Notas sobre a atualização
     update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (ticket_id) REFERENCES tickets(id),
+    FOREIGN KEY (ticket_id) REFERENCES tickets(id) ON DELETE CASCADE, -- Se o chamado for deletado, as atualizações também são.
     FOREIGN KEY (updated_by) REFERENCES users(id)
 );
 
+-- Tabela de Notificações: Para alertar usuários sobre eventos relacionados aos chamados.
 CREATE TABLE notifications (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
+    user_id INT NOT NULL, -- Usuário que receberá a notificação
     message TEXT NOT NULL,
-    is_read BOOLEAN DEFAULT FALSE,
+    is_read BOOLEAN DEFAULT FALSE, -- Indica se a notificação foi lida
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+-- Tabela de Relatórios: Para armazenar informações sobre relatórios gerados.
 CREATE TABLE reports (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    report_type ENUM('volume', 'por_data', 'tempo_medio') NOT NULL,
-    generated_by INT NOT NULL,
+    report_type ENUM('volume', 'por_data', 'tempo_medio') NOT NULL, -- Tipo de relatório
+    generated_by INT NOT NULL, -- Usuário que gerou o relatório
     generated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (generated_by) REFERENCES users(id)
 );
