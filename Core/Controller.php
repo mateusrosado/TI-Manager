@@ -62,25 +62,25 @@ class Controller{
      * A URL é construída usando BASE_URL e o formato index.php?url=Controller/method.
      * @param string $role O papel do usuário ('admin', 'adm_cliente', 'funcionario_ti', 'funcionario_cliente').
      */
-    protected function redirectToDashboard(string $role)
+    protected function redirectToView(string $role)
     {
         switch ($role) {
             case 'admin':
-                header('Location: ' . BASE_URL . 'index.php?url=dashboard/admin');
+                $this->loadView('Adm/home');
                 break;
             case 'adm_cliente':
-                header('Location: ' . BASE_URL . 'index.php?url=dashboard/admcliente');
+                $this->loadView('Adm/home');
                 break;
             case 'funcionario_ti':
-                header('Location: ' . BASE_URL . 'index.php?url=dashboard/funcionarioti');
+                $this->loadView('Funcionario/chamados-menu');
                 break;
             case 'funcionario_cliente':
-                header('Location: ' . BASE_URL . 'index.php?url=dashboard/funcionariocliente');
+                $this->loadView('Funcionario/chamados-menu');
                 break;
             default:
-                header('Location: ' . BASE_URL . 'index.php'); // Redirecionamento padrão para a raiz
+                $this->loadView('Login/index');
                 break;
         }
-        exit(); // Garante que o script pare após o redirecionamento
+        exit();
     }
 }

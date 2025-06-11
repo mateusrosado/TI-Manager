@@ -13,7 +13,7 @@ class LoginController extends Controller {
     public function adm() {
         $session = new Session();
         if ($session->isLoggedIn()) {
-            $this->redirectToDashboard($session->get('user_role'));
+            $this->redirectToView($session->get('user_role'));
         }
         $this->loadView('Login/adm');
     }
@@ -21,7 +21,7 @@ class LoginController extends Controller {
     public function funcionario() {
         $session = new Session();
         if ($session->isLoggedIn()) {
-            $this->redirectToDashboard($session->get('user_role'));
+            $this->redirectToView($session->get('user_role'));
         }
         $this->loadView('Login/funcionario');
     }

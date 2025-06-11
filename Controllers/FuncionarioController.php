@@ -47,7 +47,7 @@ class FuncionarioController extends Controller
 
         if ($user) {
             $this->session->setUser($user);
-            $this->redirectToDashboard($user['role']);
+            $this->redirectToView($user['role']);
         } else {
             $this->session->set('login_error', 'Email ou senha inválidos.');
             header('Location: ' . BASE_URL . 'index.php?url=login/funcionario');
