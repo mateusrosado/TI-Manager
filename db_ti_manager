@@ -1,67 +1,53 @@
 CREATE DATABASE IF NOT EXISTS ti_manager_db;
 USE ti_manager_db;
 
--- Tabela de Usuários: Armazena todos os usuários do sistema com seus papéis específicos.
+-- Usuários do sistema, incluindo administradores, funcionários de TI e clientes.
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL, -- Email é UNIQUE para todos os usuários
+    email VARCHAR(100) UNIQUE NOT NULL, -- Email único para cada usuário
     password VARCHAR(255) NOT NULL,
-    -- Papéis específicos para cada tipo de usuário:
-    -- 'admin': Adm (dono da empresa de TI)
-    -- 'adm_cliente': AdmCliente (administrador da empresa contratante)
-    -- 'funcionario_ti': FuncionarioTI (funcionário de TI alocado)
-    -- 'funcionario_cliente': FuncionarioCliente (usuário final na empresa contratante)
+    -- Papéis: admin (empresa de TI), adm_cliente (administrador do cliente), funcionario_ti (TI alocado), funcionario_cliente (usuário final)
     role ENUM('admin', 'adm_cliente', 'funcionario_ti', 'funcionario_cliente') NOT NULL,
-    -- CNPJ para login de 'admin' e 'adm_cliente'. Pode ser NULL para outros papéis.
+    -- CNPJ usado para login de admin e adm_cliente. Pode ser NULL para outros papéis.
     cnpj_login VARCHAR(18) UNIQUE NULL,
-    -- CPF para dados de 'funcionario_ti' e 'funcionario_cliente'. Pode ser NULL para outros papéis.
+    -- CPF usado para funcionários de TI e clientes. Pode ser NULL para outros papéis.
     cpf VARCHAR(14) UNIQUE NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabela de Clientes: Armazena as informações das empresas contratantes.
+-- Empresas clientes cadastradas no sistema.
 CREATE TABLE clients (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    -- user_id aqui se refere ao AdmCliente que gerencia esta empresa.
-    -- O Adm principal também pode criar clientes, mas o gerenciamento de acesso será do AdmCliente.
-    user_id INT NOT NULL,
+    user_id INT NOT NULL, -- Administrador responsável pela empresa cliente
     company_name VARCHAR(100) NOT NULL,
-    cnpj VARCHAR(18) UNIQUE NOT NULL, -- CNPJ da empresa cliente deve ser UNIQUE
-    contact VARCHAR(100), -- Campo para contato da empresa
+    cnpj VARCHAR(18) UNIQUE NOT NULL, -- CNPJ único da empresa cliente
+    contact VARCHAR(100), -- Informações de contato da empresa
     address TEXT,
-    data_abertura TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Data de registro/abertura da empresa
-    data_encerramento TIMESTAMP NULL, -- Data de encerramento da empresa (usado para desativação lógica)
+    data_abertura TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Data de cadastro da empresa
+    data_encerramento TIMESTAMP NULL, -- Data de encerramento (empresa desativada)
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Tabela de Funcionários de TI: Informações adicionais para usuários com role 'funcionario_ti'.
+-- Funcionários de TI vinculados a empresas clientes.
 CREATE TABLE employees (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL, -- FK para o usuário em 'users' com role 'funcionario_ti'
-    -- client_id para associar o FuncionarioTI a uma empresa cliente específica.
-    -- Um FuncionarioTI pode não estar alocado a um cliente ainda (NULL),
-    -- ou estar alocado a apenas um cliente por vez.
-    client_id INT NULL,
+    user_id INT NOT NULL, -- Referência ao usuário com papel de funcionário de TI
+    client_id INT NULL, -- Empresa cliente à qual o funcionário está alocado
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE SET NULL -- Se o cliente for deletado, o funcionário de TI fica sem alocação.
+    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE SET NULL
 );
 
--- Tabela de Chamados: Registra todos os chamados.
+-- Chamados abertos por clientes para atendimento de TI.
 CREATE TABLE tickets (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    client_id INT NOT NULL, -- Empresa cliente à qual o chamado pertence
-    created_by INT NOT NULL, -- ID do usuário (FuncionarioCliente) que criou o chamado
-    assigned_to INT DEFAULT NULL, -- ID do funcionário de TI (FuncionarioTI) atribuído
-    service_type VARCHAR(100) NOT NULL, -- Tipo de serviço (ex: Manutenção, Suporte, Instalação)
-    description TEXT, -- Descrição detalhada do problema
-    location TEXT NOT NULL, -- Local onde o serviço será realizado
-    -- Status do chamado:
-    -- 'Aberto': Recém-criado, aguardando atribuição/aceitação.
-    -- 'Pendente': Atribuído, mas aguardando início do trabalho pelo FuncionarioTI.
-    -- 'Em andamento': FuncionarioTI está trabalhando no chamado.
-    -- 'Recusado': FuncionarioTI recusou o chamado.
-    -- 'Encerrado': Chamado finalizado.
+    client_id INT NOT NULL, -- Empresa cliente relacionada ao chamado
+    created_by INT NOT NULL, -- Usuário que abriu o chamado
+    assigned_to INT DEFAULT NULL, -- Funcionário de TI responsável
+    service_type VARCHAR(100) NOT NULL, -- Tipo de serviço solicitado
+    description TEXT, -- Detalhes do problema ou solicitação
+    location TEXT NOT NULL, -- Local de atendimento
+    -- Status do chamado: Aberto, Pendente, Em andamento, Recusado, Encerrado
     status ENUM('Aberto', 'Pendente', 'Em andamento', 'Recusado', 'Encerrado') DEFAULT 'Aberto',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -70,30 +56,29 @@ CREATE TABLE tickets (
     FOREIGN KEY (assigned_to) REFERENCES employees(id)
 );
 
--- Tabela de Atualizações de Chamados: Histórico de todas as mudanças de status e notas.
+-- Histórico de atualizações dos chamados.
 CREATE TABLE ticket_updates (
     id INT AUTO_INCREMENT PRIMARY KEY,
     ticket_id INT NOT NULL,
-    updated_by INT NOT NULL, -- ID do usuário (FuncionarioTI ou FuncionarioCliente) que atualizou
-    -- Status deve refletir os possíveis status da tabela tickets
+    updated_by INT NOT NULL, -- Usuário que realizou a atualização
     status ENUM('Aberto', 'Pendente', 'Em andamento', 'Recusado', 'Encerrado') NOT NULL,
-    update_note TEXT, -- Notas sobre a atualização
+    update_note TEXT, -- Observações sobre a atualização
     update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (ticket_id) REFERENCES tickets(id) ON DELETE CASCADE, -- Se o chamado for deletado, as atualizações também são.
+    FOREIGN KEY (ticket_id) REFERENCES tickets(id) ON DELETE CASCADE,
     FOREIGN KEY (updated_by) REFERENCES users(id)
 );
 
--- Tabela de Notificações: Para alertar usuários sobre eventos relacionados aos chamados.
+-- Notificações enviadas aos usuários sobre eventos de chamados.
 CREATE TABLE notifications (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL, -- Usuário que receberá a notificação
+    user_id INT NOT NULL, -- Usuário destinatário da notificação
     message TEXT NOT NULL,
     is_read BOOLEAN DEFAULT FALSE, -- Indica se a notificação foi lida
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
--- Tabela de Relatórios: Para armazenar informações sobre relatórios gerados.
+-- Relatórios gerados no sistema.
 CREATE TABLE reports (
     id INT AUTO_INCREMENT PRIMARY KEY,
     report_type ENUM('volume', 'por_data', 'tempo_medio') NOT NULL, -- Tipo de relatório
