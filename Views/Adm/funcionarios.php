@@ -348,7 +348,7 @@
 
    <div id="addFuncionarioModal" class="modal" role="dialog" aria-labelledby="addModalTitle" aria-modal="true">
       <div class="modal-content">
-         <form method="post" action="<?= BASE_URL; ?>Adm/createFuncionarioTI" class="modal-form">
+         <form method="post" action="<?= BASE_URL; ?>Adm/<?= $viewData['user_role'] === 'adm_cliente' ? 'createFuncionarioCliente' : 'createFuncionarioTI' ?>" class="modal-form">
             <span class="close-button" onclick="closeAddModal()">&times;</span>
             <h2 id="addModalTitle">Adicionar Novo Funcionario</h2>
             

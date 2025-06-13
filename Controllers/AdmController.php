@@ -98,16 +98,32 @@ class AdmController extends Controller
     }
 
     public function funcionarios() {
-        if (!$this->session->isLoggedIn() || $this->session->get('user_role') !== 'admin') {
+        if (!$this->session->isLoggedIn() || !in_array($this->session->get('user_role'), ['admin', 'adm_cliente'])) {
             header('Location: ' . BASE_URL . 'index.php?url=login/adm');
             exit();
         }
 
         $userName = $this->session->get('user_name');
         $userRole = $this->session->get('user_role');
+        $userId = $this->session->get('user_id');
 
-        $funcionariosData = $this->userModel->getFuncionariosFiltered('funcionario_ti');
-        $empresas = $this->clientModel->getAllClients();
+        if ($userRole === 'admin') {
+            // Admin vê todos os funcionários TI
+            $funcionariosData = $this->userModel->getFuncionariosFiltered('funcionario_ti');
+            $empresas = $this->clientModel->getAllClients();
+        } elseif ($userRole === 'adm_cliente') {
+            // Adm cliente vê apenas funcionários cliente da sua empresa
+            $empresa = $this->clientModel->getClientByAdminUserId($userId);
+            $funcionariosData = [];
+            $empresas = [];
+            if ($empresa) {
+                $funcionariosData = $this->userModel->getFuncionariosFiltered('funcionario_cliente', $empresa['id']);
+                $empresas = [$empresa];
+            }
+        } else {
+            $funcionariosData = [];
+            $empresas = [];
+        }
 
         $errorMessage = $this->session->get('error_message');
         $this->session->remove('error_message');
@@ -252,6 +268,70 @@ class AdmController extends Controller
 
             if ($newUserId) {
                 $this->session->set('success_message', 'Funcionário TI cadastrado com sucesso!');
+                header('Location: ' . BASE_URL . 'index.php?url=Adm/funcionarios');
+                exit();
+            } else {
+                $errors[] = 'Erro ao cadastrar funcionário. Tente novamente.';
+            }
+        }
+
+        $this->session->set('error_message', implode('<br>', $errors));
+        header('Location: ' . BASE_URL . 'index.php?url=Adm/funcionarios');
+        exit();
+    }
+
+    public function createFuncionarioCliente() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . 'index.php?url=Adm/funcionarios');
+            exit();
+        }
+        if (!$this->session->isLoggedIn() || $this->session->get('user_role') !== 'adm_cliente') {
+            header('Location: ' . BASE_URL . 'index.php?url=login/adm');
+            exit();
+        }
+
+        $name = htmlspecialchars(trim($_POST['name'] ?? ''));
+        $cpf = htmlspecialchars(trim($_POST['cpf'] ?? ''));
+        $email = htmlspecialchars(trim($_POST['email'] ?? ''));
+        $password = $_POST['password'] ?? '';
+        $funcao = htmlspecialchars(trim($_POST['funcao'] ?? ''));
+        $userId = $this->session->get('user_id');
+        $empresa = $this->clientModel->getClientByAdminUserId($userId);
+        $client_id = $empresa ? $empresa['id'] : null;
+
+        $errors = [];
+
+        if (empty($name) || empty($cpf) || empty($email) || empty($password) || empty($funcao)) {
+            $errors[] = 'Todos os campos obrigatórios (Nome, CPF, Email, Senha, Função) devem ser preenchidos.';
+        }
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors[] = 'Formato de email inválido.';
+        }
+        if (strlen($password) < CONF_PASSWD_MIN_LEN) {
+            $errors[] = 'A senha deve ter no mínimo ' . CONF_PASSWD_MIN_LEN . ' caracteres.';
+        }
+        $cpfNumerico = preg_replace('/[^0-9]/', '', $cpf);
+        if (strlen($cpfNumerico) !== 11 || !is_numeric($cpfNumerico)) {
+            $errors[] = 'Formato de CPF inválido. Use apenas números e o formato 000.000.000-00.';
+        }
+
+        if ($this->userModel->findByEmail($email)) {
+            $errors[] = 'Este email já está cadastrado.';
+        }
+        if ($this->userModel->findByCpf($cpfNumerico)) {
+            $errors[] = 'Este CPF já está cadastrado.';
+        }
+
+        if (empty($errors)) {
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            $role = 'funcionario_cliente';
+
+            $newUserId = $this->userModel->createFuncionarioTI(
+                $name, $cpf, $email, $hashedPassword, $role, $funcao, $client_id
+            );
+
+            if ($newUserId) {
+                $this->session->set('success_message', 'Funcionário Cliente cadastrado com sucesso!');
                 header('Location: ' . BASE_URL . 'index.php?url=Adm/funcionarios');
                 exit();
             } else {
