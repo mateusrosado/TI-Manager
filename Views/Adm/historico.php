@@ -22,8 +22,8 @@
     </div>
     <a href="<?= BASE_URL; ?>Adm/home">Home</a>
     <a href="<?= BASE_URL; ?>Adm/empresas">Empresas</a>
-    <a href="<?= BASE_URL; ?>Adm/funcionarios">Funcionarios</a>
-    <a class="active" href="<?= BASE_URL; ?>Adm/historico">Historico</a>
+    <a href="<?= BASE_URL; ?>Adm/funcionarios">Funcionários</a>
+    <a class="active" href="<?= BASE_URL; ?>Adm/historico">Histórico</a>
     <a href="<?= BASE_URL; ?>Adm/logout/" style="margin-top: auto;">Logout</a>
   </aside>  
 
@@ -31,7 +31,6 @@
     <section id="historico">
       <div class="header-section">
         <h2><?= htmlspecialchars($viewData['empresa']['company_name'] ?? 'Empresa'); ?></h2>
-        <button class="btn" onclick="window.location.href='../AddChamado/'">+ Novo Chamado</button>
       </div>
       <div class="container-table">
         <table>
@@ -42,11 +41,9 @@
               <th>Descrição</th>
               <th>Solicitante</th>
               <th>Responsável</th>
+              <th>Status</th>
               <th>Data Abertura</th>
               <th>Data Fechamento</th>
-              <th>Status</th>
-              <th>Prioridade</th>
-              <th>Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -58,11 +55,9 @@
                   <td><?= htmlspecialchars($chamado['descricao'] ?? ''); ?></td>
                   <td><?= htmlspecialchars($chamado['solicitante'] ?? ''); ?></td>
                   <td><?= htmlspecialchars($chamado['funcionario_nome'] ?? ''); ?></td>
+                  <td><span class="status"><?= htmlspecialchars($chamado['status'] ?? ''); ?></span></td>
                   <td><?= !empty($chamado['data_abertura']) ? date('d/m/y', strtotime($chamado['data_abertura'])) : ''; ?></td>
                   <td><?= !empty($chamado['data_fechamento']) ? date('d/m/y', strtotime($chamado['data_fechamento'])) : '-'; ?></td>
-                  <td><span class="status"><?= htmlspecialchars($chamado['status'] ?? ''); ?></span></td>
-                  <td><?= htmlspecialchars($chamado['prioridade'] ?? ''); ?></td>
-                  <td>✎</td>
                 </tr>
               <?php endforeach; ?>
             <?php else: ?>

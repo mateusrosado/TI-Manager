@@ -22,7 +22,7 @@
         </div>
         <a class="active" href="<?= BASE_URL; ?>Adm/home">Home</a>
         <a href="<?= BASE_URL; ?>Adm/empresas">Empresas</a>
-        <a href="<?= BASE_URL; ?>Adm/funcionarios">Funcionarios</a>
+        <a href="<?= BASE_URL; ?>Adm/funcionarios">Funcionários</a>
         <a href="<?= BASE_URL; ?>Adm/logout/" style="margin-top: auto;">Logout</a>
     </aside>
 

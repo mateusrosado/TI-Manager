@@ -82,10 +82,60 @@ class ClienteModel extends Model
 
     public function excluirEmpresa(int $empresaId): bool
     {
-        $query = "DELETE FROM {$this->table_name} WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':id', $empresaId, PDO::PARAM_INT);
-        return $stmt->execute();
+        $this->db->beginTransaction();
+        try {
+            // 1. Buscar o user_id do adm_cliente da empresa
+            $queryAdm = "SELECT user_id FROM {$this->table_name} WHERE id = :empresa_id";
+            $stmtAdm = $this->db->prepare($queryAdm);
+            $stmtAdm->bindParam(':empresa_id', $empresaId, PDO::PARAM_INT);
+            $stmtAdm->execute();
+            $adm = $stmtAdm->fetch(PDO::FETCH_ASSOC);
+
+            // 2. Buscar todos os user_id dos funcionários cliente dessa empresa
+            $queryFuncionarios = "SELECT user_id FROM employees WHERE client_id = :empresa_id";
+            $stmtFunc = $this->db->prepare($queryFuncionarios);
+            $stmtFunc->bindParam(':empresa_id', $empresaId, PDO::PARAM_INT);
+            $stmtFunc->execute();
+            $funcionarios = $stmtFunc->fetchAll(PDO::FETCH_COLUMN);
+
+            // 3. Excluir todos os funcionários cliente (tabela users)
+            if (!empty($funcionarios)) {
+                $in = implode(',', array_fill(0, count($funcionarios), '?'));
+                $queryDelFuncs = "DELETE FROM users WHERE id IN ($in) AND role = 'funcionario_cliente'";
+                $stmtDelFuncs = $this->db->prepare($queryDelFuncs);
+                foreach ($funcionarios as $k => $id) {
+                    $stmtDelFuncs->bindValue($k + 1, $id, PDO::PARAM_INT);
+                }
+                $stmtDelFuncs->execute();
+            }
+
+            // 4. Excluir o adm_cliente (tabela users)
+            if ($adm && $adm['user_id']) {
+                $queryDelAdm = "DELETE FROM users WHERE id = :adm_id AND role = 'adm_cliente'";
+                $stmtDelAdm = $this->db->prepare($queryDelAdm);
+                $stmtDelAdm->bindParam(':adm_id', $adm['user_id'], PDO::PARAM_INT);
+                $stmtDelAdm->execute();
+            }
+
+            // 5. Excluir a empresa (tabela clients)
+            $queryDelEmpresa = "DELETE FROM {$this->table_name} WHERE id = :empresa_id";
+            $stmtDelEmpresa = $this->db->prepare($queryDelEmpresa);
+            $stmtDelEmpresa->bindParam(':empresa_id', $empresaId, PDO::PARAM_INT);
+            $stmtDelEmpresa->execute();
+
+            // Após excluir usuários:
+            $queryDelEmployees = "DELETE FROM employees WHERE client_id = :empresa_id";
+            $stmtDelEmployees = $this->db->prepare($queryDelEmployees);
+            $stmtDelEmployees->bindParam(':empresa_id', $empresaId, PDO::PARAM_INT);
+            $stmtDelEmployees->execute();
+
+            $this->db->commit();
+            return true;
+        } catch (PDOException $e) {
+            $this->db->rollBack();
+            error_log("Erro ao excluir empresa e usuários relacionados: " . $e->getMessage());
+            return false;
+        }
     }
 
     public function getEmpresaById(int $id): ?array

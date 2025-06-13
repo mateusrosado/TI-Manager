@@ -413,14 +413,14 @@
             <a class="<?= (isset($viewData['nivel-1']) && $viewData['nivel-1'] == "Empresas") ? 'active' : ''; ?>"
                 href="<?= BASE_URL; ?>index.php?url=Adm/empresas">Empresas</a>
             <a class="<?= (isset($viewData['nivel-1']) && $viewData['nivel-1'] == "Funcionarios") ? 'active' : ''; ?>"
-                href="<?= BASE_URL; ?>index.php?url=Adm/funcionarios">Funcionarios</a>
+                href="<?= BASE_URL; ?>index.php?url=Adm/funcionarios">Funcionários</a>
         <?php elseif ($userRole == 'adm_cliente'): ?>
             <a class="<?= (isset($viewData['nivel-1']) && $viewData['nivel-1'] == "Home") ? 'active' : ''; ?>"
                 href="<?= BASE_URL; ?>index.php?url=Home/index">Home</a>
             <a class="<?= (isset($viewData['nivel-1']) && $viewData['nivel-1'] == "MeusChamadosEmpresa") ? 'active' : ''; ?>"
                 href="<?= BASE_URL; ?>index.php?url=ChamadosCliente/todos">Meus Chamados (Empresa)</a>
             <a class="<?= (isset($viewData['nivel-1']) && $viewData['nivel-1'] == "FuncionariosCliente") ? 'active' : ''; ?>"
-                href="<?= BASE_URL; ?>index.php?url=Cliente/funcionarios">Funcionarios (Cliente)</a>
+                href="<?= BASE_URL; ?>index.php?url=Cliente/funcionarios">Funcionários (Cliente)</a>
         <?php endif; ?>
 
         <?php

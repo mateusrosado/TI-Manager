@@ -196,6 +196,34 @@ class UserModel extends Model
     }
 
     /**
+     * Cria um novo usuário com o papel de 'adm_cliente'.
+     *
+     * @param string $companyName Nome da empresa (usado como nome do usuário).
+     * @param string $cnpj CNPJ da empresa.
+     * @param string $hashedPassword Senha do usuário (já deve estar criptografada).
+     * @return int|null O ID do novo usuário criado, ou null em caso de erro.
+     */
+    public function createAdmClienteUser(string $companyName, string $cnpj, string $hashedPassword): ?int
+    {
+        $query = "INSERT INTO {$this->table_name} 
+        (name, email, password, role, cnpj_login, cpf, created_at, is_active)
+        VALUES (:name, :email, :password, 'adm_cliente', :cnpj_login, :cpf, NOW(), 1)";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':name', $companyName);
+        $stmt->bindValue(':email', null, PDO::PARAM_NULL);
+        $stmt->bindParam(':password', $hashedPassword);
+        $stmt->bindParam(':cnpj_login', $cnpj);
+        $stmt->bindValue(':cpf', null, PDO::PARAM_NULL);
+        try {
+            $stmt->execute();
+            return (int)$this->db->lastInsertId();
+        } catch (PDOException $e) {
+            error_log("Erro ao criar adm_cliente: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
      * Obtém os detalhes completos de um funcionário (usuário) por ID.
      * Inclui dados da tabela users e employees (client_id, funcao).
      * @param int $id O ID do usuário/funcionário.

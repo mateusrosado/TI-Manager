@@ -297,7 +297,7 @@
    <main class="main">
       <section id="funcionarios">
          <div class="header-section">
-            <h2>Funcionarios</h2>
+            <h2>Funcionários</h2>
             <button class="btn" onclick="openAddModal()">+ Novo Funcionario</button>
          </div>
          <div class="container-table">
