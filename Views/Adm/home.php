@@ -30,7 +30,7 @@
     <main class="main">
         <section id="home" class="active">
             <div class="header-section">
-                <h2>Empresas e Chamados</h2>
+                <h2>Empresas</h2>
                 <button class="btn" onclick="window.location.href='<?= BASE_URL; ?>AddCliente/'">+ Nova Empresa</button>
             </div>
             <div class="card-container">
