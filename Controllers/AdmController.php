@@ -531,25 +531,17 @@ class AdmController extends Controller
         }
 
         if (empty($errors)) {
-            // 1. Cria o usuário adm_cliente
-            $hashedPassword = password_hash($cnpjNumerico, PASSWORD_DEFAULT);
-            $admClienteId = $this->userModel->createAdmClienteUser($companyName, $cnpjNumerico, $hashedPassword);
+            // Apenas cria a empresa, não cria mais o adm_cliente!
+            $newClientId = $this->clientModel->createClient(
+                $companyName, $cnpjNumerico, $contact, $address, $adminUserId
+            );
 
-            if (!$admClienteId) {
-                $errors[] = 'Erro ao criar usuário administrador da empresa.';
+            if ($newClientId) {
+                $this->session->set('empresa_success_message', 'Empresa cadastrada com sucesso!');
+                header('Location: ' . BASE_URL . 'Adm/empresas');
+                exit();
             } else {
-                // 2. Cria a empresa vinculando ao adm_cliente
-                $newClientId = $this->clientModel->createClient(
-                    $companyName, $cnpjNumerico, $contact, $address, $admClienteId
-                );
-
-                if ($newClientId) {
-                    $this->session->set('empresa_success_message', 'Empresa cadastrada com sucesso!');
-                    header('Location: ' . BASE_URL . 'Adm/empresas');
-                    exit();
-                } else {
-                    $errors[] = 'Erro ao cadastrar empresa. Tente novamente.';
-                }
+                $errors[] = 'Erro ao cadastrar empresa. Tente novamente.';
             }
         }
 
