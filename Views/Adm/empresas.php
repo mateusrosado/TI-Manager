@@ -409,18 +409,18 @@
 
         <?php if ($userRole == 'admin'): ?>
             <a class="<?= (isset($viewData['nivel-1']) && $viewData['nivel-1'] == "Home") ? 'active' : ''; ?>"
-                href="<?= BASE_URL; ?>index.php?url=Home/index">Home</a>
+                href="<?= BASE_URL; ?>Home/index">Home</a>
             <a class="<?= (isset($viewData['nivel-1']) && $viewData['nivel-1'] == "Empresas") ? 'active' : ''; ?>"
-                href="<?= BASE_URL; ?>index.php?url=Adm/empresas">Empresas</a>
+                href="<?= BASE_URL; ?>Adm/empresas">Empresas</a>
             <a class="<?= (isset($viewData['nivel-1']) && $viewData['nivel-1'] == "Funcionarios") ? 'active' : ''; ?>"
-                href="<?= BASE_URL; ?>index.php?url=Adm/funcionarios">Funcionários</a>
+                href="<?= BASE_URL; ?>Adm/funcionarios">Funcionários</a>
         <?php elseif ($userRole == 'adm_cliente'): ?>
             <a class="<?= (isset($viewData['nivel-1']) && $viewData['nivel-1'] == "Home") ? 'active' : ''; ?>"
-                href="<?= BASE_URL; ?>index.php?url=Home/index">Home</a>
+                href="<?= BASE_URL; ?>Home/index">Home</a>
             <a class="<?= (isset($viewData['nivel-1']) && $viewData['nivel-1'] == "MeusChamadosEmpresa") ? 'active' : ''; ?>"
-                href="<?= BASE_URL; ?>index.php?url=ChamadosCliente/todos">Meus Chamados (Empresa)</a>
+                href="<?= BASE_URL; ?>ChamadosCliente/todos">Meus Chamados (Empresa)</a>
             <a class="<?= (isset($viewData['nivel-1']) && $viewData['nivel-1'] == "FuncionariosCliente") ? 'active' : ''; ?>"
-                href="<?= BASE_URL; ?>index.php?url=Cliente/funcionarios">Funcionários (Cliente)</a>
+                href="<?= BASE_URL; ?>Cliente/funcionarios">Funcionários (Cliente)</a>
         <?php endif; ?>
 
         <?php
@@ -431,7 +431,7 @@
             $logoutController = 'Funcionario';
         }
         ?>
-        <a href="<?= BASE_URL; ?>index.php?url=<?= $logoutController; ?>/logout" style="margin-top: auto;">Logout</a>
+        <a href="<?= BASE_URL; ?><?= $logoutController; ?>/logout" style="margin-top: auto;">Logout</a>
     </aside>
 
     <main class="main">
@@ -486,7 +486,7 @@
 
     <div id="addEmpresaModal" class="modal modal-edit-and-create" role="dialog" aria-labelledby="addModalTitle" aria-modal="true">
         <div class="modal-content">
-            <form method="post" action="<?= BASE_URL; ?>index.php?url=Adm/createEmpresa" class="modal-form">
+            <form method="post" action="<?= BASE_URL; ?>Adm/createEmpresa" class="modal-form">
                 <span class="close-button" onclick="closeAddModal()">&times;</span>
                 <h2 id="addModalTitle">Cadastrar empresa</h2>
                 <div id="add_modal_message_area"></div>
@@ -513,7 +513,7 @@
 
     <div id="editEmpresaModal" class="modal" role="dialog" aria-labelledby="editModalTitle" aria-modal="true">
         <div class="modal-content">
-            <form method="post" action="<?= BASE_URL; ?>index.php?url=Adm/updateEmpresa" class="modal-form">
+            <form method="post" action="<?= BASE_URL; ?>Adm/updateEmpresa" class="modal-form">
                 <span class="close-button" onclick="closeEditModal()">&times;</span>
                 <h2 id="editModalTitle">Editar Empresa</h2>
                 <div id="edit_modal_message_area"></div>
@@ -627,7 +627,7 @@
             editModalMessageArea.innerHTML = '';
             if (typeof jQuery !== 'undefined') {
                 $.ajax({
-                    url: `<?= BASE_URL; ?>index.php?url=Adm/getEmpresaJson/${id}`,
+                    url: `<?= BASE_URL; ?>Adm/getEmpresaJson/${id}`,
                     method: 'GET',
                     dataType: 'json',
                     success: function(response) {
@@ -704,7 +704,7 @@
 
         confirmActionBtn.addEventListener('click', () => {
             if (currentActionType === 'excluir_empresa' && currentEmpresaId) {
-                const actionUrl = `<?= BASE_URL; ?>index.php?url=Adm/excluirEmpresa/${currentEmpresaId}`;
+                const actionUrl = `<?= BASE_URL; ?>Adm/excluirEmpresa/${currentEmpresaId}`;
                 if (typeof jQuery !== 'undefined') {
                     $.ajax({
                         url: actionUrl,
@@ -740,9 +740,9 @@
             if (currentActionFuncionarioId && currentActionType) {
                 let actionUrl = '';
                 if (currentActionType === 'inativar') {
-                    actionUrl = `<?= BASE_URL; ?>index.php?url=Adm/inativarFuncionario/${currentActionFuncionarioId}`;
+                    actionUrl = `<?= BASE_URL; ?>Adm/inativarFuncionario/${currentActionFuncionarioId}`;
                 } else if (currentActionType === 'ativar') {
-                    actionUrl = `<?= BASE_URL; ?>index.php?url=Adm/ativarFuncionario/${currentActionFuncionarioId}`;
+                    actionUrl = `<?= BASE_URL; ?>Adm/ativarFuncionario/${currentActionFuncionarioId}`;
                 }
                 if (actionUrl && typeof jQuery !== 'undefined') {
                     $.ajax({

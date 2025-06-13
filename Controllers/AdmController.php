@@ -21,7 +21,7 @@ class AdmController extends Controller
     public function login()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: ' . BASE_URL . 'index.php?url=login/adm');
+            header('Location: ' . BASE_URL . 'login/adm');
             exit();
         }
 
@@ -33,20 +33,20 @@ class AdmController extends Controller
 
         if (empty($cnpj) || empty($password)) {
             $this->session->set('login_error', 'CNPJ e senha são obrigatórios.');
-            header('Location: ' . BASE_URL . 'index.php?url=login/adm');
+            header('Location: ' . BASE_URL . 'login/adm');
             exit();
         }
 
         $cnpjNumerico = preg_replace('/[^0-9]/', '', $cnpj);
         if (strlen($cnpjNumerico) !== 14 || !is_numeric($cnpjNumerico)) {
             $this->session->set('login_error', 'Formato de CNPJ inválido. Use apenas números ou o formato 00.000.000/0000-00.');
-            header('Location: ' . BASE_URL . 'index.php?url=login/adm');
+            header('Location: ' . BASE_URL . 'login/adm');
             exit();
         }
 
         if (strlen($password) < CONF_PASSWD_MIN_LEN) {
             $this->session->set('login_error', 'A senha deve ter no mínimo ' . CONF_PASSWD_MIN_LEN . ' caracteres.');
-            header('Location: ' . BASE_URL . 'index.php?url=login/adm');
+            header('Location: ' . BASE_URL . 'login/adm');
             exit();
         }
 
@@ -57,7 +57,7 @@ class AdmController extends Controller
             $this->redirectToView($user['role']);
         } else {
             $this->session->set('login_error', 'CNPJ ou senha inválidos.');
-            header('Location: ' . BASE_URL . 'index.php?url=login/adm');
+            header('Location: ' . BASE_URL . 'login/adm');
             exit();
         }
     }
@@ -65,13 +65,13 @@ class AdmController extends Controller
     public function logout()
     {
         $this->session->destroy();
-        header('Location: ' . BASE_URL . 'index.php?url=login/adm');
+        header('Location: ' . BASE_URL . 'login/adm');
         exit();
     }
 
     public function home() {
         if (!$this->session->isLoggedIn()) {
-            header('Location: ' . BASE_URL . 'index.php?url=login/adm');
+            header('Location: ' . BASE_URL . 'login/adm');
             exit();
         }
 
@@ -80,7 +80,7 @@ class AdmController extends Controller
         $userId = $this->session->get('user_id');
 
         if (!in_array($userRole, ['admin', 'adm_cliente'])) {
-            header('Location: ' . BASE_URL . 'index.php?url=login/adm');
+            header('Location: ' . BASE_URL . 'login/adm');
             exit();
         }
 
@@ -99,7 +99,7 @@ class AdmController extends Controller
 
     public function funcionarios() {
         if (!$this->session->isLoggedIn() || !in_array($this->session->get('user_role'), ['admin', 'adm_cliente'])) {
-            header('Location: ' . BASE_URL . 'index.php?url=login/adm');
+            header('Location: ' . BASE_URL . 'login/adm');
             exit();
         }
 
@@ -162,7 +162,7 @@ class AdmController extends Controller
 
     public function empresas() {
         if (!$this->session->isLoggedIn() || $this->session->get('user_role') !== 'admin') {
-            header('Location: ' . BASE_URL . 'index.php?url=login/adm');
+            header('Location: ' . BASE_URL . 'login/adm');
             exit();
         }
 
@@ -192,7 +192,7 @@ class AdmController extends Controller
 
     public function historico() {
         if (!$this->session->isLoggedIn() || $this->session->get('user_role') !== 'admin') {
-            header('Location: ' . BASE_URL . 'index.php?url=login/adm');
+            header('Location: ' . BASE_URL . 'login/adm');
             exit();
         }
 
@@ -220,11 +220,11 @@ class AdmController extends Controller
 
     public function createFuncionarioTI() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: ' . BASE_URL . 'index.php?url=Adm/funcionarios');
+            header('Location: ' . BASE_URL . 'Adm/funcionarios');
             exit();
         }
         if (!$this->session->isLoggedIn() || $this->session->get('user_role') !== 'admin') {
-            header('Location: ' . BASE_URL . 'index.php?url=login/adm');
+            header('Location: ' . BASE_URL . 'login/adm');
             exit();
         }
 
@@ -268,7 +268,7 @@ class AdmController extends Controller
 
             if ($newUserId) {
                 $this->session->set('success_message', 'Funcionário TI cadastrado com sucesso!');
-                header('Location: ' . BASE_URL . 'index.php?url=Adm/funcionarios');
+                header('Location: ' . BASE_URL . 'Adm/funcionarios');
                 exit();
             } else {
                 $errors[] = 'Erro ao cadastrar funcionário. Tente novamente.';
@@ -276,17 +276,17 @@ class AdmController extends Controller
         }
 
         $this->session->set('error_message', implode('<br>', $errors));
-        header('Location: ' . BASE_URL . 'index.php?url=Adm/funcionarios');
+        header('Location: ' . BASE_URL . 'Adm/funcionarios');
         exit();
     }
 
     public function createFuncionarioCliente() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: ' . BASE_URL . 'index.php?url=Adm/funcionarios');
+            header('Location: ' . BASE_URL . 'Adm/funcionarios');
             exit();
         }
         if (!$this->session->isLoggedIn() || $this->session->get('user_role') !== 'adm_cliente') {
-            header('Location: ' . BASE_URL . 'index.php?url=login/adm');
+            header('Location: ' . BASE_URL . 'login/adm');
             exit();
         }
 
@@ -332,7 +332,7 @@ class AdmController extends Controller
 
             if ($newUserId) {
                 $this->session->set('success_message', 'Funcionário Cliente cadastrado com sucesso!');
-                header('Location: ' . BASE_URL . 'index.php?url=Adm/funcionarios');
+                header('Location: ' . BASE_URL . 'Adm/funcionarios');
                 exit();
             } else {
                 $errors[] = 'Erro ao cadastrar funcionário. Tente novamente.';
@@ -340,7 +340,7 @@ class AdmController extends Controller
         }
 
         $this->session->set('error_message', implode('<br>', $errors));
-        header('Location: ' . BASE_URL . 'index.php?url=Adm/funcionarios');
+        header('Location: ' . BASE_URL . 'Adm/funcionarios');
         exit();
     }
 
@@ -379,12 +379,12 @@ class AdmController extends Controller
 
     public function updateFuncionarioTI() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: ' . BASE_URL . 'index.php?url=Adm/funcionarios');
+            header('Location: ' . BASE_URL . 'Adm/funcionarios');
             exit();
         }
 
         if (!$this->session->isLoggedIn() || $this->session->get('user_role') !== 'admin') {
-            header('Location: ' . BASE_URL . 'index.php?url=login/adm');
+            header('Location: ' . BASE_URL . 'login/adm');
             exit();
         }
 
@@ -433,7 +433,7 @@ class AdmController extends Controller
 
             if ($updateSuccess) {
                 $this->session->set('edit_success_message', 'Funcionário atualizado com sucesso!');
-                header('Location: ' . BASE_URL . 'index.php?url=Adm/funcionarios');
+                header('Location: ' . BASE_URL . 'Adm/funcionarios');
                 exit();
             } else {
                 $errors[] = 'Erro ao atualizar funcionário. Verifique os dados e tente novamente.';
@@ -442,7 +442,7 @@ class AdmController extends Controller
 
         $this->session->set('edit_error_message', implode('<br>', $errors));
         $this->session->set('editing_funcionario_id', $id);
-        header('Location: ' . BASE_URL . 'index.php?url=Adm/funcionarios');
+        header('Location: ' . BASE_URL . 'Adm/funcionarios');
         exit();
     }
 
@@ -500,13 +500,13 @@ class AdmController extends Controller
 
     public function createEmpresa() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: ' . BASE_URL . 'index.php?url=Adm/empresas');
+            header('Location: ' . BASE_URL . 'Adm/empresas');
             exit();
         }
 
         if (!$this->session->isLoggedIn() || $this->session->get('user_role') !== 'admin') {
             $this->session->set('empresa_error_message', 'Acesso negado. Apenas administradores podem cadastrar empresas.');
-            header('Location: ' . BASE_URL . 'index.php?url=Adm/empresas');
+            header('Location: ' . BASE_URL . 'Adm/empresas');
             exit();
         }
 
@@ -545,7 +545,7 @@ class AdmController extends Controller
 
                 if ($newClientId) {
                     $this->session->set('empresa_success_message', 'Empresa cadastrada com sucesso!');
-                    header('Location: ' . BASE_URL . 'index.php?url=Adm/empresas');
+                    header('Location: ' . BASE_URL . 'Adm/empresas');
                     exit();
                 } else {
                     $errors[] = 'Erro ao cadastrar empresa. Tente novamente.';
@@ -554,7 +554,7 @@ class AdmController extends Controller
         }
 
         $this->session->set('empresa_error_message', implode('<br>', $errors));
-        header('Location: ' . BASE_URL . 'index.php?url=Adm/empresas');
+        header('Location: ' . BASE_URL . 'Adm/empresas');
         exit();
     }
 
@@ -572,13 +572,13 @@ class AdmController extends Controller
     public function updateEmpresa()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: ' . BASE_URL . 'index.php?url=Adm/empresas');
+            header('Location: ' . BASE_URL . 'Adm/empresas');
             exit();
         }
 
         if (!$this->session->isLoggedIn() || $this->session->get('user_role') !== 'admin') {
             $this->session->set('empresa_error_message', 'Acesso negado. Apenas administradores podem editar empresas.');
-            header('Location: ' . BASE_URL . 'index.php?url=Adm/empresas');
+            header('Location: ' . BASE_URL . 'Adm/empresas');
             exit();
         }
 
@@ -610,7 +610,7 @@ class AdmController extends Controller
             $atualizado = $this->clientModel->updateEmpresa($id, $companyName, $cnpjNumerico, $contact, $address);
             if ($atualizado) {
                 $this->session->set('empresa_success_message', 'Empresa atualizada com sucesso!');
-                header('Location: ' . BASE_URL . 'index.php?url=Adm/empresas');
+                header('Location: ' . BASE_URL . 'Adm/empresas');
                 exit();
             } else {
                 $errors[] = 'Erro ao atualizar empresa. Tente novamente.';
@@ -618,7 +618,7 @@ class AdmController extends Controller
         }
 
         $this->session->set('empresa_error_message', implode('<br>', $errors));
-        header('Location: ' . BASE_URL . 'index.php?url=Adm/empresas');
+        header('Location: ' . BASE_URL . 'Adm/empresas');
         exit();
     }
 }

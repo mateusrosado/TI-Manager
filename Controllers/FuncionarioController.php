@@ -18,12 +18,12 @@ class FuncionarioController extends Controller
     /**
      * Processa a requisição de login para FuncionarioTI/FuncionarioCliente.
      * Esta ação é chamada quando o formulário em 'Views/Login/funcionario.php' é submetido.
-     * Rota de POST: index.php?url=Funcionario/login
+     * Rota de POST: Funcionario/login
      */
     public function login()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: ' . BASE_URL . 'index.php?url=login/funcionario');
+            header('Location: ' . BASE_URL . 'login/funcionario');
             exit();
         }
 
@@ -35,19 +35,19 @@ class FuncionarioController extends Controller
 
         if (empty($email) || empty($password)) {
             $this->session->set('login_error', 'Email e senha são obrigatórios.');
-            header('Location: ' . BASE_URL . 'index.php?url=login/funcionario');
+            header('Location: ' . BASE_URL . 'login/funcionario');
             exit();
         }
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $this->session->set('login_error', 'Formato de email inválido.');
-            header('Location: ' . BASE_URL . 'index.php?url=login/funcionario');
+            header('Location: ' . BASE_URL . 'login/funcionario');
             exit();
         }
 
         if (strlen($password) < 6) {
             $this->session->set('login_error', 'A senha deve ter pelo menos 6 caracteres.');
-            header('Location: ' . BASE_URL . 'index.php?url=login/funcionario');
+            header('Location: ' . BASE_URL . 'login/funcionario');
             exit();
         }
 
@@ -59,31 +59,31 @@ class FuncionarioController extends Controller
             $this->redirectToView($user['role']);
         } else {
             $this->session->set('login_error', 'Email ou senha inválidos.');
-            header('Location: ' . BASE_URL . 'index.php?url=login/funcionario');
+            header('Location: ' . BASE_URL . 'login/funcionario');
             exit();
         }
     }
 
     /**
      * Realiza o logout do usuário FuncionarioTI ou FuncionarioCliente.
-     * Rota: index.php?url=Funcionario/logout
+     * Rota: Funcionario/logout
      */
     public function logout()
     {
         $this->session->destroy();
-        header('Location: ' . BASE_URL . 'index.php?url=login/funcionario'); // Redireciona para o login de funcionário
+        header('Location: ' . BASE_URL . 'login/funcionario'); // Redireciona para o login de funcionário
         exit();
     }
 
     /**
      * Exibe a página 'Chamados' para usuários 'funcionario_ti' e 'funcionario_cliente'.
      * Esta é a ação que será chamada após um login bem-sucedido ou ao acessar a rota 'Chamados/index'.
-     * Rota: index.php?url=Chamados/index
+     * Rota: Chamados/index
      */
     public function chamados() {
         // 1. Verificação de autenticação e papel (Proteção de rota)
         if (!$this->session->isLoggedIn()) {
-            header('Location: ' . BASE_URL . 'index.php?url=login/funcionario');
+            header('Location: ' . BASE_URL . 'login/funcionario');
             exit();
         }
 
@@ -93,7 +93,7 @@ class FuncionarioController extends Controller
 
         // Garante que apenas 'funcionario_ti' ou 'funcionario_cliente' acessem esta página
         if (!in_array($userRole, ['funcionario_ti', 'funcionario_cliente'])) {
-            header('Location: ' . BASE_URL . 'index.php?url=login/funcionario'); // Ou para um NotFoundController/AccessDenied
+            header('Location: ' . BASE_URL . 'login/funcionario'); // Ou para um NotFoundController/AccessDenied
             exit();
         }
 
