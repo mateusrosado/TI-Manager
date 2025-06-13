@@ -225,6 +225,26 @@
          top: 10px;
          right: 15px;
       }
+      #globalToast {
+         position: fixed;
+         top: 20px;
+         right: 20px;
+         padding: 15px 25px;
+         border-radius: 8px;
+         color: white;
+         font-size: 1.1em;
+         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+         z-index: 1001;
+         display: none;
+         opacity: 0;
+         transition: opacity 0.5s ease-in-out;
+      }
+      #globalToast.success {
+         background-color: #28a745;
+      }
+      #globalToast.error {
+         background-color: #dc3545;
+      }
    </style>
 </head>
 
@@ -446,6 +466,8 @@
       </div>
    </div>
 
+   <div id="globalToast" class="toast-message"></div>
+
    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
    <script>
@@ -512,7 +534,7 @@
          currentActionFuncionarioId = id;
          currentActionType = actionType;
          if (actionType === 'inativar') {
-            confirmModalTitle.textContent = "Confirmar Inativacao";
+            confirmModalTitle.textContent = "Confirmar Inativação";
             confirmModalMessage.innerHTML = `Tem certeza que deseja inativar o funcionario <strong>${name}</strong>?<br>Ele nao podera ter chamados ativos nem estar atribuido a uma empresa.`;
             confirmActionBtn.textContent = "Sim, Inativar";
             confirmActionBtn.className = "btn-confirm-yes btn-inativar";
@@ -588,7 +610,7 @@
             closeConfirmModal();
          }
       };
-      <?php if (isset($viewData['error_message']) || isset($viewData['success_message'])): ?>
+      <?php if (isset($viewData['error_message'])): ?>
          window.autoOpeningAddModal = true;
          openAddModal();
       <?php endif; ?>
@@ -609,20 +631,20 @@
             'background-color': '#a00'
          });
          <?php if (isset($viewData['inativar_error_message'])): ?>
-            confirmModalTitle.textContent = "Erro na Inativacao";
+            confirmModalTitle.textContent = "Erro na Inativação";
             inativateMessageDiv.text('<?= htmlspecialchars($viewData["inativar_error_message"], ENT_QUOTES, 'UTF-8'); ?>');
          <?php elseif (isset($viewData['inativar_success_message'])): ?>
-            confirmModalTitle.textContent = "Inativacao Realizada";
+            confirmModalTitle.textContent = "Inativação Realizada";
             inativateMessageDiv.html('<span style="color:green;">' + '<?= htmlspecialchars($viewData["inativar_success_message"], ENT_QUOTES, 'UTF-8'); ?>' + '</span>');
             inativateMessageDiv.css({
                'color': 'green',
                'background-color': '#0a0'
             });
          <?php elseif (isset($viewData['ativar_error_message'])): ?>
-            confirmModalTitle.textContent = "Erro na Ativacao";
+            confirmModalTitle.textContent = "Erro na Ativação";
             inativateMessageDiv.text('<?= htmlspecialchars($viewData["ativar_error_message"], ENT_QUOTES, 'UTF-8'); ?>');
          <?php elseif (isset($viewData['ativar_success_message'])): ?>
-            confirmModalTitle.textContent = "Ativacao Realizada";
+            confirmModalTitle.textContent = "Ativação Realizada";
             inativateMessageDiv.html('<span style="color:green;">' + '<?= htmlspecialchars($viewData["ativar_success_message"], ENT_QUOTES, 'UTF-8'); ?>' + '</span>');
             inativateMessageDiv.css({
                'color': 'green',
@@ -634,12 +656,57 @@
             setTimeout(() => { closeConfirmModal(); }, 3000);
          <?php endif; ?>
       <?php endif; ?>
+      function displayToast(message, type) {
+         let toast = document.getElementById('globalToast');
+         if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'globalToast';
+            toast.className = 'toast-message';
+            document.body.appendChild(toast);
+         }
+         toast.textContent = message;
+         toast.className = 'toast-message ' + type;
+         toast.style.display = 'block';
+         toast.style.opacity = '1';
+         setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => {
+               toast.style.display = 'none';
+               toast.textContent = '';
+            }, 500);
+         }, 5000);
+      }
       if (typeof jQuery !== 'undefined') {
          jQuery(document).ready(function($) {
             $('#add_cpf').mask('000.000.000-00', {reverse: false});
             $('#edit_cpf').mask('000.000.000-00', {reverse: false});
          });
       }
+      <?php if (isset($viewData['add_success_message'])): ?>
+         closeAddModal();
+         displayToast('<?= htmlspecialchars($viewData["add_success_message"], ENT_QUOTES, 'UTF-8'); ?>', 'success');
+      <?php elseif (isset($viewData['add_error_message'])): ?>
+         displayToast('<?= htmlspecialchars($viewData["add_error_message"], ENT_QUOTES, 'UTF-8'); ?>', 'error');
+      <?php endif; ?>
+
+      <?php if (isset($viewData['edit_success_message'])): ?>
+         closeEditModal();
+         displayToast('<?= htmlspecialchars($viewData["edit_success_message"], ENT_QUOTES, 'UTF-8'); ?>', 'success');
+      <?php elseif (isset($viewData['edit_error_message'])): ?>
+         displayToast('<?= htmlspecialchars($viewData["edit_error_message"], ENT_QUOTES, 'UTF-8'); ?>', 'error');
+      <?php endif; ?>
+
+      <?php if (isset($viewData['inativar_success_message'])): ?>
+         displayToast('<?= htmlspecialchars($viewData["inativar_success_message"], ENT_QUOTES, 'UTF-8'); ?>', 'success');
+      <?php elseif (isset($viewData['inativar_error_message'])): ?>
+         displayToast('<?= htmlspecialchars($viewData["inativar_error_message"], ENT_QUOTES, 'UTF-8'); ?>', 'error');
+      <?php endif; ?>
+
+      <?php if (isset($viewData['ativar_success_message'])): ?>
+         displayToast('<?= htmlspecialchars($viewData["ativar_success_message"], ENT_QUOTES, 'UTF-8'); ?>', 'success');
+      <?php elseif (isset($viewData['ativar_error_message'])): ?>
+         displayToast('<?= htmlspecialchars($viewData["ativar_error_message"], ENT_QUOTES, 'UTF-8'); ?>', 'error');
+      <?php endif; ?>
    </script>
 </body>
 

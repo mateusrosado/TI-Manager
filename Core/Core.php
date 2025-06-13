@@ -91,6 +91,18 @@ class Core {
                 $controller = new AdmController();
                 $controller->updateFuncionarioTI();
                 break;
+            case ($currentController === 'AdmController' && $currentAction === 'inativarFuncionario' && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($params[0])):
+                $controller = new AdmController();
+                $controller->inativarFuncionario((int)$params[0]);
+                break;
+            case ($currentController === 'AdmController' && $currentAction === 'ativarFuncionario' && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($params[0])):
+                $controller = new AdmController();
+                $controller->ativarFuncionario((int)$params[0]);
+                break;
+            case ($currentController === 'AdmController' && $currentAction === 'createEmpresa' && $_SERVER['REQUEST_METHOD'] === 'POST'):
+                $controller = new AdmController();
+                $controller->createEmpresa();
+                break;
             case ($currentController === 'ChamadosController' && $currentAction === 'index' && $_SERVER['REQUEST_METHOD'] === 'GET'):
                 $controller = new FuncionarioController();
                 $controller->chamados();

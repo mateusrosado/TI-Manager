@@ -21,7 +21,7 @@ class AdmController extends Controller
     public function login()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: ' . BASE_URL . 'login/adm');
+            header('Location: ' . BASE_URL . 'index.php?url=login/adm');
             exit();
         }
 
@@ -33,20 +33,20 @@ class AdmController extends Controller
 
         if (empty($cnpj) || empty($password)) {
             $this->session->set('login_error', 'CNPJ e senha são obrigatórios.');
-            header('Location: ' . BASE_URL . 'login/adm');
+            header('Location: ' . BASE_URL . 'index.php?url=login/adm');
             exit();
         }
 
         $cnpjNumerico = preg_replace('/[^0-9]/', '', $cnpj);
         if (strlen($cnpjNumerico) !== 14 || !is_numeric($cnpjNumerico)) {
             $this->session->set('login_error', 'Formato de CNPJ inválido. Use apenas números ou o formato 00.000.000/0000-00.');
-            header('Location: ' . BASE_URL . 'login/adm');
+            header('Location: ' . BASE_URL . 'index.php?url=login/adm');
             exit();
         }
 
         if (strlen($password) < CONF_PASSWD_MIN_LEN) {
             $this->session->set('login_error', 'A senha deve ter no mínimo ' . CONF_PASSWD_MIN_LEN . ' caracteres.');
-            header('Location: ' . BASE_URL . 'login/adm');
+            header('Location: ' . BASE_URL . 'index.php?url=login/adm');
             exit();
         }
 
@@ -57,7 +57,7 @@ class AdmController extends Controller
             $this->redirectToView($user['role']);
         } else {
             $this->session->set('login_error', 'CNPJ ou senha inválidos.');
-            header('Location: ' . BASE_URL . 'login/adm');
+            header('Location: ' . BASE_URL . 'index.php?url=login/adm');
             exit();
         }
     }
@@ -65,13 +65,13 @@ class AdmController extends Controller
     public function logout()
     {
         $this->session->destroy();
-        header('Location: ' . BASE_URL . 'login/adm');
+        header('Location: ' . BASE_URL . 'index.php?url=login/adm');
         exit();
     }
 
     public function home() {
         if (!$this->session->isLoggedIn()) {
-            header('Location: ' . BASE_URL . 'login/adm');
+            header('Location: ' . BASE_URL . 'index.php?url=login/adm');
             exit();
         }
 
@@ -80,7 +80,7 @@ class AdmController extends Controller
         $userId = $this->session->get('user_id');
 
         if (!in_array($userRole, ['admin', 'adm_cliente'])) {
-            header('Location: ' . BASE_URL . 'login/adm');
+            header('Location: ' . BASE_URL . 'index.php?url=login/adm');
             exit();
         }
 
@@ -96,7 +96,7 @@ class AdmController extends Controller
 
     public function funcionarios() {
         if (!$this->session->isLoggedIn() || $this->session->get('user_role') !== 'admin') {
-            header('Location: ' . BASE_URL . 'login/adm');
+            header('Location: ' . BASE_URL . 'index.php?url=login/adm');
             exit();
         }
 
@@ -143,20 +143,29 @@ class AdmController extends Controller
 
     public function empresas() {
         if (!$this->session->isLoggedIn() || $this->session->get('user_role') !== 'admin') {
-            header('Location: ' . BASE_URL . 'login/adm');
+            header('Location: ' . BASE_URL . 'index.php?url=login/adm');
             exit();
         }
 
         $userName = $this->session->get('user_name');
         $userRole = $this->session->get('user_role');
+        $userId = $this->session->get('user_id');
 
         $empresasData = $this->clientModel->getAllClients();
+
+        $errorMessage = $this->session->get('empresa_error_message');
+        $this->session->remove('empresa_error_message');
+        $successMessage = $this->session->get('empresa_success_message');
+        $this->session->remove('empresa_success_message');
 
         $viewData = [
             'name' => $userName,
             'user_role' => $userRole,
+            'user_id' => $userId,
             'nivel-1' => 'Empresas',
             'empresas' => $empresasData,
+            'error_message' => $errorMessage,
+            'success_message' => $successMessage,
         ];
 
         $this->loadView('Adm/empresas', $viewData);
@@ -164,7 +173,7 @@ class AdmController extends Controller
 
     public function historico() {
         if (!$this->session->isLoggedIn() || $this->session->get('user_role') !== 'admin') {
-            header('Location: ' . BASE_URL . 'login/adm');
+            header('Location: ' . BASE_URL . 'index.php?url=login/adm');
             exit();
         }
 
@@ -185,11 +194,11 @@ class AdmController extends Controller
 
     public function createFuncionarioTI() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: ' . BASE_URL . 'Adm/funcionarios');
+            header('Location: ' . BASE_URL . 'index.php?url=Adm/funcionarios');
             exit();
         }
         if (!$this->session->isLoggedIn() || $this->session->get('user_role') !== 'admin') {
-            header('Location: ' . BASE_URL . 'login/adm');
+            header('Location: ' . BASE_URL . 'index.php?url=login/adm');
             exit();
         }
 
@@ -233,7 +242,7 @@ class AdmController extends Controller
 
             if ($newUserId) {
                 $this->session->set('success_message', 'Funcionário TI cadastrado com sucesso!');
-                header('Location: ' . BASE_URL . 'Adm/funcionarios');
+                header('Location: ' . BASE_URL . 'index.php?url=Adm/funcionarios');
                 exit();
             } else {
                 $errors[] = 'Erro ao cadastrar funcionário. Tente novamente.';
@@ -241,7 +250,7 @@ class AdmController extends Controller
         }
 
         $this->session->set('error_message', implode('<br>', $errors));
-        header('Location: ' . BASE_URL . 'Adm/funcionarios');
+        header('Location: ' . BASE_URL . 'index.php?url=Adm/funcionarios');
         exit();
     }
 
@@ -266,14 +275,26 @@ class AdmController extends Controller
         exit();
     }
 
+    public function getEmpresaJson($id)
+    {
+        header('Content-Type: application/json');
+        $empresa = $this->clientModel->getEmpresaById((int)$id);
+        if ($empresa) {
+            echo json_encode($empresa);
+        } else {
+            echo json_encode(['error' => 'Empresa não encontrada']);
+        }
+        exit;
+    }
+
     public function updateFuncionarioTI() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: ' . BASE_URL . 'Adm/funcionarios');
+            header('Location: ' . BASE_URL . 'index.php?url=Adm/funcionarios');
             exit();
         }
 
         if (!$this->session->isLoggedIn() || $this->session->get('user_role') !== 'admin') {
-            header('Location: ' . BASE_URL . 'login/adm');
+            header('Location: ' . BASE_URL . 'index.php?url=login/adm');
             exit();
         }
 
@@ -322,7 +343,7 @@ class AdmController extends Controller
 
             if ($updateSuccess) {
                 $this->session->set('edit_success_message', 'Funcionário atualizado com sucesso!');
-                header('Location: ' . BASE_URL . 'Adm/funcionarios');
+                header('Location: ' . BASE_URL . 'index.php?url=Adm/funcionarios');
                 exit();
             } else {
                 $errors[] = 'Erro ao atualizar funcionário. Verifique os dados e tente novamente.';
@@ -331,7 +352,7 @@ class AdmController extends Controller
 
         $this->session->set('edit_error_message', implode('<br>', $errors));
         $this->session->set('editing_funcionario_id', $id);
-        header('Location: ' . BASE_URL . 'Adm/funcionarios');
+        header('Location: ' . BASE_URL . 'index.php?url=Adm/funcionarios');
         exit();
     }
 
@@ -358,6 +379,147 @@ class AdmController extends Controller
         }
         
         echo json_encode($result);
+        exit();
+    }
+
+    public function ativarFuncionario(int $id) {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['success' => false, 'message' => 'Método não permitido.']);
+            exit();
+        }
+        if (!$this->session->isLoggedIn() || $this->session->get('user_role') !== 'admin') {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'Acesso negado. Apenas administradores podem realizar esta ação.']);
+            exit();
+        }
+
+        header('Content-Type: application/json');
+
+        $result = $this->userModel->ativarFuncionario($id);
+
+        if ($result['success']) {
+            $this->session->set('ativar_success_message', $result['message']);
+        } else {
+            $this->session->set('ativar_error_message', $result['message']);
+        }
+        
+        echo json_encode($result);
+        exit();
+    }
+
+    public function createEmpresa() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . 'index.php?url=Adm/empresas');
+            exit();
+        }
+
+        if (!$this->session->isLoggedIn() || $this->session->get('user_role') !== 'admin') {
+            $this->session->set('empresa_error_message', 'Acesso negado. Apenas administradores podem cadastrar empresas.');
+            header('Location: ' . BASE_URL . 'index.php?url=Adm/empresas');
+            exit();
+        }
+
+        $companyName = htmlspecialchars(trim($_POST['company_name'] ?? ''));
+        $cnpj = htmlspecialchars(trim($_POST['cnpj'] ?? ''));
+        $contact = htmlspecialchars(trim($_POST['contact'] ?? ''));
+        $address = htmlspecialchars(trim($_POST['address'] ?? ''));
+        $adminUserId = $this->session->get('user_id');
+
+        $errors = [];
+
+        if (empty($companyName) || empty($cnpj) || empty($contact) || empty($address)) {
+            $errors[] = 'Todos os campos obrigatórios (Nome da Empresa, CNPJ, Contato, Endereço) devem ser preenchidos.';
+        }
+        $cnpjNumerico = preg_replace('/[^0-9]/', '', $cnpj);
+        if (strlen($cnpjNumerico) !== 14 || !is_numeric($cnpjNumerico)) {
+            $errors[] = 'Formato de CNPJ inválido. Use apenas números ou o formato 00.000.000/0000-00.';
+        }
+
+        if ($this->clientModel->findByCnpj($cnpjNumerico)) {
+            $errors[] = 'Este CNPJ já está cadastrado para outra empresa.';
+        }
+
+        if (empty($errors)) {
+            $newClientId = $this->clientModel->createClient(
+                $companyName, $cnpjNumerico, $contact, $address, $adminUserId
+            );
+
+            if ($newClientId) {
+                $this->session->set('empresa_success_message', 'Empresa cadastrada com sucesso!');
+                header('Location: ' . BASE_URL . 'index.php?url=Adm/empresas');
+                exit();
+            } else {
+                $errors[] = 'Erro ao cadastrar empresa. Tente novamente.';
+            }
+        }
+
+        $this->session->set('empresa_error_message', implode('<br>', $errors));
+        header('Location: ' . BASE_URL . 'index.php?url=Adm/empresas');
+        exit();
+    }
+
+    public function excluirEmpresa($id)
+    {
+        header('Content-Type: application/json');
+        if ($this->clientModel->excluirEmpresa((int)$id)) {
+            echo json_encode(['success' => true, 'message' => 'Empresa excluída com sucesso!']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao excluir empresa.']);
+        }
+        exit;
+    }
+
+    public function updateEmpresa()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . 'index.php?url=Adm/empresas');
+            exit();
+        }
+
+        if (!$this->session->isLoggedIn() || $this->session->get('user_role') !== 'admin') {
+            $this->session->set('empresa_error_message', 'Acesso negado. Apenas administradores podem editar empresas.');
+            header('Location: ' . BASE_URL . 'index.php?url=Adm/empresas');
+            exit();
+        }
+
+        $id = (int)($_POST['id'] ?? 0);
+        $companyName = htmlspecialchars(trim($_POST['company_name'] ?? ''));
+        $cnpj = htmlspecialchars(trim($_POST['cnpj'] ?? ''));
+        $contact = htmlspecialchars(trim($_POST['contact'] ?? ''));
+        $address = htmlspecialchars(trim($_POST['address'] ?? ''));
+
+        $errors = [];
+
+        if ($id <= 0) {
+            $errors[] = 'ID da empresa inválido para edição.';
+        }
+        if (empty($companyName) || empty($cnpj) || empty($contact) || empty($address)) {
+            $errors[] = 'Todos os campos obrigatórios devem ser preenchidos.';
+        }
+        $cnpjNumerico = preg_replace('/[^0-9]/', '', $cnpj);
+        if (strlen($cnpjNumerico) !== 14 || !is_numeric($cnpjNumerico)) {
+            $errors[] = 'Formato de CNPJ inválido. Use apenas números ou o formato 00.000.000/0000-00.';
+        }
+
+        $empresaExistente = $this->clientModel->findByCnpj($cnpjNumerico);
+        if ($empresaExistente && $empresaExistente['id'] != $id) {
+            $errors[] = 'Este CNPJ já está cadastrado para outra empresa.';
+        }
+
+        if (empty($errors)) {
+            $atualizado = $this->clientModel->updateEmpresa($id, $companyName, $cnpjNumerico, $contact, $address);
+            if ($atualizado) {
+                $this->session->set('empresa_success_message', 'Empresa atualizada com sucesso!');
+                header('Location: ' . BASE_URL . 'index.php?url=Adm/empresas');
+                exit();
+            } else {
+                $errors[] = 'Erro ao atualizar empresa. Tente novamente.';
+            }
+        }
+
+        $this->session->set('empresa_error_message', implode('<br>', $errors));
+        header('Location: ' . BASE_URL . 'index.php?url=Adm/empresas');
         exit();
     }
 }
