@@ -84,11 +84,14 @@ class AdmController extends Controller
             exit();
         }
 
+        $empresas = $this->clientModel->getAllClients(); // <-- Adicione esta linha
+
         $viewData = [
             'name' => $userName,
             'user_role' => $userRole,
             'user_id' => $userId,
             'nivel-1' => 'Home',
+            'empresas' => $empresas, // <-- E esta linha
         ];
 
         $this->loadView('Adm/home', $viewData);
@@ -180,13 +183,20 @@ class AdmController extends Controller
         $userName = $this->session->get('user_name');
         $userRole = $this->session->get('user_role');
 
-        $historicoData = $this->ticketModel->getAllTicketsWithDetails();
+        $empresaId = isset($_GET['empresa']) ? (int)$_GET['empresa'] : null;
+
+        $chamados = [];
+        $empresa = null;
+        if ($empresaId) {
+            $chamados = $this->ticketModel->getTicketsByEmpresaId($empresaId);
+            $empresa = $this->clientModel->getEmpresaById($empresaId);
+        }
 
         $viewData = [
             'name' => $userName,
             'user_role' => $userRole,
-            'nivel-1' => 'Historico',
-            'historico' => $historicoData,
+            'empresa' => $empresa,
+            'chamados' => $chamados,
         ];
 
         $this->loadView('Adm/historico', $viewData);

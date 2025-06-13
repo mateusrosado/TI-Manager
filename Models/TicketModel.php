@@ -38,4 +38,29 @@ class TicketModel extends Model
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    /**
+     * Obtém os chamados de uma empresa específica pelo ID da empresa.
+     * @param int $empresaId O ID da empresa cujos chamados devem ser recuperados.
+     * @return array Um array de arrays associativos com os dados dos chamados da empresa.
+     */
+    public function getTicketsByEmpresaId(int $empresaId): array
+    {
+        $query = "SELECT 
+                    t.id,
+                    t.service_type AS titulo,
+                    t.status,
+                    t.created_at AS data_abertura,
+                    u.name AS funcionario_nome
+                  FROM {$this->tickets_table} t
+                  LEFT JOIN employees e ON t.assigned_to = e.id
+                  LEFT JOIN users u ON e.user_id = u.id
+                  WHERE t.client_id = :empresa_id
+                  ORDER BY t.created_at DESC";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':empresa_id', $empresaId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

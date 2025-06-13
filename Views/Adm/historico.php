@@ -30,7 +30,7 @@
   <main class="main">
     <section id="historico">
       <div class="header-section">
-        <h2>Dell Brasil</h2>
+        <h2><?= htmlspecialchars($viewData['empresa']['company_name'] ?? 'Empresa'); ?></h2>
         <button class="btn" onclick="window.location.href='../AddChamado/'">+ Novo Chamado</button>
       </div>
       <div class="container-table">
@@ -38,51 +38,38 @@
           <thead>
             <tr>
               <th>#</th>
-              <th>Empresa</th>
               <th>Chamado</th>
-              <th>Funcionario</th>
-              <th>Data</th>
+              <th>Descrição</th>
+              <th>Solicitante</th>
+              <th>Responsável</th>
+              <th>Data Abertura</th>
+              <th>Data Fechamento</th>
               <th>Status</th>
-              <th>Editar</th>
+              <th>Prioridade</th>
+              <th>Ações</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>001</td>
-              <td>Dell Brasil</td>
-              <td>Problema de Rede</td>
-              <td>Funcionario 05</td>
-              <td>22/05/25</td>
-              <td><span class="status">Aberto</span></td>
-              <td>✎</td>
-            </tr>
-            <tr>
-              <td>002</td>
-              <td>Dell Brasil</td>
-              <td>Erro no Software</td>
-              <td>Funcionario 02</td>
-              <td>22/05/25</td>
-              <td><span class="status">Aberto</span></td>
-              <td>✎</td>
-            </tr>
-            <tr>
-              <td>003</td>
-              <td>Dell Brasil</td>
-              <td>Manutenção</td>
-              <td>Funcionario 03</td>
-              <td>22/05/25</td>
-              <td><span class="status">Aberto</span></td>
-              <td>✎</td>
-            </tr>
-            <tr>
-              <td>004</td>
-              <td>Dell Brasil</td>
-              <td>Problema de Rede</td>
-              <td>Funcionario 01</td>
-              <td>22/05/25</td>
-              <td><span class="status">Aberto</span></td>
-              <td>✎</td>
-            </tr>
+            <?php if (!empty($viewData['chamados'])): ?>
+              <?php foreach ($viewData['chamados'] as $chamado): ?>
+                <tr>
+                  <td><?= htmlspecialchars($chamado['id']); ?></td>
+                  <td><?= htmlspecialchars($chamado['titulo'] ?? ''); ?></td>
+                  <td><?= htmlspecialchars($chamado['descricao'] ?? ''); ?></td>
+                  <td><?= htmlspecialchars($chamado['solicitante'] ?? ''); ?></td>
+                  <td><?= htmlspecialchars($chamado['funcionario_nome'] ?? ''); ?></td>
+                  <td><?= !empty($chamado['data_abertura']) ? date('d/m/y', strtotime($chamado['data_abertura'])) : ''; ?></td>
+                  <td><?= !empty($chamado['data_fechamento']) ? date('d/m/y', strtotime($chamado['data_fechamento'])) : '-'; ?></td>
+                  <td><span class="status"><?= htmlspecialchars($chamado['status'] ?? ''); ?></span></td>
+                  <td><?= htmlspecialchars($chamado['prioridade'] ?? ''); ?></td>
+                  <td>✎</td>
+                </tr>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <tr>
+                <td colspan="10">Nenhum chamado encontrado para esta empresa.</td>
+              </tr>
+            <?php endif; ?>
           </tbody>
         </table>
       </div>

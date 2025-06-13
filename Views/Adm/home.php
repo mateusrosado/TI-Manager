@@ -33,20 +33,19 @@
                 <button class="btn" onclick="window.location.href='<?= BASE_URL; ?>AddCliente/'">+ Nova Empresa</button>
             </div>
             <div class="card-container">
-                <div class="card">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Dell_Logo.svg/512px-Dell_Logo.svg.png" alt="Dell" width="60">
-                    <h3>Dell Brasil</h3>
-                    <p><strong>08</strong> Funcionários</p>
-                    <p><strong>04</strong> Chamados</p>
-                    <button class="btn" onclick="window.location.href='<?= BASE_URL; ?>TableExample/'">Ver mais</button>
-                </div>
-                <div class="card">
-                    <img src="https://www.intel.com.br/content/dam/logos/intel-header-logo.svg" alt="Intel" width="60">
-                    <h3>Intel Brasil</h3>
-                    <p><strong>06</strong> Funcionários</p>
-                    <p><strong>02</strong> Chamados</p>
-                    <button class="btn" onclick="window.location.href='<?= BASE_URL; ?>TableExample/'">Ver mais</button>
-                </div>
+                <?php if (!empty($viewData['empresas'])): ?>
+                    <?php foreach ($viewData['empresas'] as $empresa): ?>
+                        <div class="card">
+                            <img src="https://ui-avatars.com/api/?name=<?= urlencode($empresa['company_name']); ?>&background=0D8ABC&color=fff" alt="<?= htmlspecialchars($empresa['company_name']); ?>" width="60">
+                            <h3><?= htmlspecialchars($empresa['company_name']); ?></h3>
+                            <p><strong><?= $empresa['funcionarios_count'] ?? '0'; ?></strong> Funcionários</p>
+                            <p><strong><?= $empresa['chamados_ativos'] ?? '0'; ?></strong> Chamados</p>
+                            <button class="btn" onclick="window.location.href='<?= BASE_URL; ?>Adm/historico/?empresa=<?= $empresa['id']; ?>'">Ver mais</button>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p>Nenhuma empresa cadastrada.</p>
+                <?php endif; ?>
             </div>
         </section>
     </main>

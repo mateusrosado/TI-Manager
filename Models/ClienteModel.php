@@ -20,7 +20,12 @@ class ClienteModel extends Model
                 c.address, 
                 c.data_abertura, 
                 c.data_encerramento,
-                COUNT(e.user_id) AS funcionarios_count
+                COUNT(e.user_id) AS funcionarios_count,
+                (
+                    SELECT COUNT(*) FROM tickets t
+                    WHERE t.client_id = c.id
+                      AND t.status NOT IN ('Recusado', 'Encerrado')
+                ) AS chamados_ativos
               FROM " . $this->table_name . " c
               LEFT JOIN employees e ON e.client_id = c.id
               GROUP BY c.id, c.company_name, c.cnpj, c.contact, c.address, c.data_abertura, c.data_encerramento
