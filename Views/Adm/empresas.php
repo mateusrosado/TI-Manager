@@ -200,18 +200,17 @@
             opacity: 0.8;
         }
         .btn-inativar {
-            background-color: transparent;
-            color: #dc3545;
+            background-color: #dc3545;
+            color: white;
             border: none;
             padding: 5px 10px;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 1.2em;
-            transition: background-color 0.3s ease, color 0.3s;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease;
         }
         .btn-inativar:hover {
-            background-color: transparent;
-            color: #a00;
+            background-color: #c82333;
         }
         .btn-ativar {
             background-color: #28a745;
@@ -470,7 +469,7 @@
                                         <a href="#" onclick="openEditModal(<?= $empresa['id']; ?>)" title="Editar empresa">
                                             <i class="icon-edit"></i>
                                         </a>
-                                        <button class="btn-inativar" onclick="openConfirmDeleteModal(<?= $empresa['id']; ?>, '<?= htmlspecialchars($empresa['company_name'], ENT_QUOTES, 'UTF-8'); ?>')" title="Excluir empresa">🗑️</button>
+                                        <button class="btn-inativar" onclick="openConfirmDeleteModal(<?= $empresa['id']; ?>, '<?= htmlspecialchars($empresa['company_name'], ENT_QUOTES, 'UTF-8'); ?>')" title="Excluir empresa">✕</button>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
