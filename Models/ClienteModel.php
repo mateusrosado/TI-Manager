@@ -12,9 +12,19 @@ class ClienteModel extends Model
 
     public function getAllClients(): array
     {
-        $query = "SELECT id, company_name, cnpj, contact, address, data_abertura, data_encerramento
-                  FROM " . $this->table_name . "
-                  ORDER BY company_name ASC";
+        $query = "SELECT 
+                c.id, 
+                c.company_name, 
+                c.cnpj, 
+                c.contact, 
+                c.address, 
+                c.data_abertura, 
+                c.data_encerramento,
+                COUNT(e.user_id) AS funcionarios_count
+              FROM " . $this->table_name . " c
+              LEFT JOIN employees e ON e.client_id = c.id
+              GROUP BY c.id, c.company_name, c.cnpj, c.contact, c.address, c.data_abertura, c.data_encerramento
+              ORDER BY c.company_name ASC";
         $stmt = $this->db->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

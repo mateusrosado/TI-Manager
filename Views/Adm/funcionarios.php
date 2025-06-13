@@ -120,6 +120,11 @@
       .modal-form button[type="submit"]:hover {
          background-color: #3b5a9b;
       }
+      .container-table {
+            width: 100%;
+            overflow-x: auto;
+            max-width: 120rem !important;
+        }
       .container-table td a, .container-table td button {
          display: inline-block;
          margin-right: 5px;

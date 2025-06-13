@@ -115,11 +115,71 @@
         .modal-content button:hover {
             background-color: #3b5a9b;
         }
-        .container-table td a,
-        .container-table td button {
-            display: inline-block;
-            margin-right: 5px;
-            vertical-align: middle;
+        .container-table {
+            width: 100%;
+            overflow-x: auto;
+            max-width: 120rem !important;
+        }
+        .container-table table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: auto;
+        }
+        .container-table th, .container-table td {
+            padding: 12px 10px;
+            text-align: left;
+            white-space: nowrap;
+        }
+        .container-table th:nth-child(2), .container-table td:nth-child(2) { min-width: 220px; }
+        .container-table th:nth-child(5), .container-table td:nth-child(5) { min-width: 220px; }
+        .container-table th, .container-table td { max-width: 400px; word-break: break-word; }
+
+        /* RESPONSIVIDADE MELHORADA */
+        @media (max-width: 900px) {
+            .container-table {
+                overflow-x: visible;
+            }
+            .container-table table,
+            .container-table thead,
+            .container-table tbody,
+            .container-table th,
+            .container-table td,
+            .container-table tr {
+                display: block;
+                width: 100%;
+            }
+            .container-table thead {
+                display: none;
+            }
+            .container-table tr {
+                margin-bottom: 1.5rem;
+                border-bottom: 1px solid #444;
+                background: #232323;
+                border-radius: 8px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                padding: 10px 0;
+            }
+            .container-table td {
+                position: relative;
+                padding-left: 50%;
+                min-width: unset;
+                max-width: unset;
+                white-space: normal;
+                border: none;
+                box-sizing: border-box;
+                background: none;
+            }
+            .container-table td:before {
+                position: absolute;
+                left: 10px;
+                top: 12px;
+                width: 45%;
+                white-space: nowrap;
+                font-weight: bold;
+                color: #aaa;
+                content: attr(data-label);
+                text-align: left;
+            }
         }
         .icon-edit {
             display: inline-block;
@@ -391,6 +451,7 @@
                             <th>Contato</th>
                             <th>Endereço</th>
                             <th>Data de abertura</th>
+                            <th>Funcionários</th> <!-- NOVA COLUNA -->
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -398,13 +459,14 @@
                         <?php if (!empty($viewData['empresas'])): ?>
                             <?php foreach ($viewData['empresas'] as $empresa): ?>
                                 <tr>
-                                    <td><?= htmlspecialchars($empresa['id']); ?></td>
-                                    <td><?= htmlspecialchars($empresa['company_name']); ?></td>
-                                    <td><?= htmlspecialchars($empresa['cnpj'] ?? 'N/A'); ?></td>
-                                    <td><?= htmlspecialchars($empresa['contact'] ?? 'Nao informado'); ?></td>
-                                    <td><?= htmlspecialchars($empresa['address'] ?? 'Nao informado'); ?></td>
-                                    <td><?= htmlspecialchars(date('d/m/Y', strtotime($empresa['data_abertura']))) ?></td>
-                                    <td>
+                                    <td data-label="#"><?= htmlspecialchars($empresa['id']); ?></td>
+                                    <td data-label="Empresa"><?= htmlspecialchars($empresa['company_name']); ?></td>
+                                    <td data-label="CNPJ"><?= htmlspecialchars($empresa['cnpj'] ?? 'N/A'); ?></td>
+                                    <td data-label="Contato"><?= htmlspecialchars($empresa['contact'] ?? 'Nao informado'); ?></td>
+                                    <td data-label="Endereço"><?= htmlspecialchars($empresa['address'] ?? 'Nao informado'); ?></td>
+                                    <td data-label="Data de abertura"><?= htmlspecialchars(date('d/m/Y', strtotime($empresa['data_abertura']))) ?></td>
+                                    <td data-label="Funcionários"><?= (int)($empresa['funcionarios_count'] ?? 0); ?></td> <!-- NOVO DADO -->
+                                    <td data-label="Ações">
                                         <a href="#" onclick="openEditModal(<?= $empresa['id']; ?>)" title="Editar empresa">
                                             <i class="icon-edit"></i>
                                         </a>
@@ -414,7 +476,7 @@
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="7">Nenhuma empresa cadastrada.</td>
+                                <td colspan="8">Nenhuma empresa cadastrada.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
